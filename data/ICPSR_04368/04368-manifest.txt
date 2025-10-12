@@ -1,0 +1,75 @@
+File Manifest for ICPSR 4368
+
+Sutton-Tyrrell, Kim, Faith Selzer, MaryFran, R. (Mary Frances Roy) Sowers,
+Robert Neer, Lynda Powell, Ellen B. Gold, Gail Greendale, Gerson Weiss,
+Karen A. Matthews, and Sonja McKinlay. Study of Women's Health Across the
+Nation (SWAN): Cross-Sectional Screener Dataset, [United States], 1995-
+1997. ICPSR04368-v5. Ann Arbor, MI: Inter-university Consortium for
+Political and Social Research [distributor], 2019-03-11.
+http://doi.org/10.3886/ICPSR04368.v5
+
+Details on the version history can be found below the file listings.
+
+
+Study-level Documentation
+
+    Filename                            Record  Record    Var.    Date        MD5
+                                        Length  Count     Count   Updated     Checksum
+
+    04368-descriptioncitation.pdf       -       -         -       2019-04-24  -
+
+    04368-related_literature.txt        -       -         -       daily       -
+
+    04368-manifest.txt                  -       -         -       daily       -
+
+
+DS0001 Study of Women's Health Across the Nation (SWAN): Cross-Sectional
+Screener Dataset, [United States], 1995-1997
+
+    Filename                            Record  Record    Var.    Date        MD5
+                                        Length  Count     Count   Updated     Checksum
+
+    04368-0001-Codebook-ICPSR.pdf       -       -         -       2019-03-11  ed8e1544007b6271dad4ae21a3862a5e
+
+    04368-0001-Codebook-PI.pdf          -       -         -       2019-03-11  ecc3d292fde98255cf5c556413b7a48e
+
+    04368-0001-Data.dta                 -       16,142    111     2019-03-11  b27c04f6b30f92ac8fc8d1f5e4de775d
+
+    04368-0001-Data.rda                 -       16,142    111     2019-03-11  49b80b2a8a6c4c2b0f0cd35a9bc9b8c5
+
+    04368-0001-Data.sav                 -       16,142    111     2019-03-11  cd763722313fe4d79658f19b60ba65ba
+
+    04368-0001-Data.stc                 -       16,142    111     2019-03-11  e8f7ecc97ad67a335c423ef23f47d25d
+
+    04368-0001-Data.tsv                 -       16,142    111     2019-03-11  061f49d986f67d54ba0442982bb95685
+
+    04368-0001-Data.txt                 246     16,142    111     2019-03-11  a22e82b05cfa4aa20e4a934aa98e791a
+
+    04368-0001-Documentation-SWAN_Publications.pdf -       -         -       2019-03-11  4bb606ecec84094867347bccfb4cd6d5
+
+    04368-0001-Setup.dct                -       -         -       2019-03-11  13277d0cf8d9afc3564e11cb44fda730
+
+    04368-0001-Setup.do                 -       -         -       2019-03-11  929dc5390e0fe5405839b9d58d837563
+
+    04368-0001-Setup.sas                -       -         -       2019-03-11  dfef2ad7e5b83ca2fa3bd1a173ca58e6
+
+    04368-0001-Setup.sps                -       -         -       2019-03-11  85c08b2551c990d1c527c05b4ea1bdd7
+
+    04368-0001-Supplemental_syntax.do   -       -         -       2019-03-11  527829f9db87dd122713e1af41afb5f2
+
+    04368-0001-Supplemental_syntax.sas  -       -         -       2019-03-11  7b11c22f3b4b3461b2f2d10e21457684
+
+
+Version History
+
+2019-03-11 This collection has been updated to include fully curated data
+files with question text and online analysis capabilites.  2018-08-02 This
+collection has been updated to include a dataset with the original missing
+values and a codebook that list additional changes in blue text. Also, the
+linking variable "ID" has been changed to "SWANID" to match the linking
+variable for the entire SWAN series data to make merging easier.  2014-01-
+29 This data collection is now publicly available.  2011-01-06 The data now
+include New Jersey cohort cases that have been introduced into the data
+collection. These cases were initially withheld from the original data
+release.  2010-06-03 The data are restricted, but the documentation files
+are available for download.
