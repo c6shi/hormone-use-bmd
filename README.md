@@ -14,7 +14,7 @@ We use the SWAN data publicly available on ICPSR: https://www.icpsr.umich.edu/we
 - Visit 07: ICPSR 31901
 - Visit 08: ICPSR 32122
 - Visit 09: ICPSR 32721
-- Visit 10: 
+- Visit 10: ICPSR 32961
 
 # References:
 Solomon, D. H., Ruppert, K., Cauley, J. A., Lian, Y., Altwies, H., Shieh, A., and Burnett-Bowie, S.-A. M. (2024). The effect of starting metformin on bone mineral density among women with type 2 diabetes in the Study of Women’s Health Across the Nation (SWAN). Osteoporosis International, 35(1):189–194.
