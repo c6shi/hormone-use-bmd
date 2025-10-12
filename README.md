@@ -9,8 +9,8 @@ We use the SWAN data publicly available on ICPSR: https://www.icpsr.umich.edu/we
 - Visit 02: ICPSR 29401
 - Visit 03: ICPSR 29701
 - Visit 04: ICPSR 30142
-- Visit 05:
-- Visit 06:
+- Visit 05: ICPSR 30501
+- Visit 06: ICPSR 31181
 - Visit 07:
 - Visit 08:
 - Visit 09:
