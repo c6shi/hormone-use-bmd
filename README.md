@@ -18,3 +18,5 @@ We use the SWAN data publicly available on ICPSR: https://www.icpsr.umich.edu/we
 
 # References:
 Solomon, D. H., Ruppert, K., Cauley, J. A., Lian, Y., Altwies, H., Shieh, A., and Burnett-Bowie, S.-A. M. (2024). The effect of starting metformin on bone mineral density among women with type 2 diabetes in the Study of Women’s Health Across the Nation (SWAN). Osteoporosis International, 35(1):189–194.
+
+Sowers, M., Crawford, S., Sternfeld, B., Morganstein, D., Gold, E., Greendale, G., Evans, D., Neer, R., Matthews, K., Sherman, S., Lo, A., Weiss, G., and Kelsey, J. (2000). SWAN: A Multicenter, Multiethnic, Community-Based Cohort Study of Women and the Menopausal Transition. In Lobo, R., Kelsey, J., and Marcus, R., editors, Menopause: Biology and Pathobiology, pages 175–188. San Diego: Academic Press.
