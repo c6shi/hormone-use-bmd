@@ -16,6 +16,29 @@ We use the SWAN data publicly available on ICPSR: https://www.icpsr.umich.edu/we
 - Visit 09: ICPSR 32721
 - Visit 10: ICPSR 32961
 
+Data cleaning is performed in `data-cleaning.R`. The final clean dataset can be found as a csv file at `data/clean_data.csv`. 
+
+# Roadmap:
+## Step 1. Question of Interest
+What is the mean difference in bone mineral density (BMD) at the spine and hip at Visit 10 for women in the SWAN study if all participants reported having hormonal replacement therapy (HRT) or using hormonal contraceptives at all visits vs if no participants reported having HRT or using hormonal contraceptives at any visits. 
+
+## Step 2. Observed Data & Statistical Model
+Our observed data has the following structure: $$O = (B_0, A_0, C_0, C_0L_0, TV_1, A_1, C_1, C_1L_1 \dots, TV_{10}, A_{10}, C_{10}, C_{10}L_{10} = Y)$$
+where 
+- $B_0$ are baseline covariates
+- $TV_t$ are time-varying covariates at time $t$
+- $A_t$ is exposure at time $t$
+- $C_t$ is censoring at time $t$
+- $C_tL_t$ is observed BMD at time $t$
+
+## Step 3. DAG & SEM
+
+## Step 4. Causal Target Parameter
+
+## Step 5. Identification & Statistical Estimand
+
+## Step 6. Estimation
+
 # References:
 Alebna, P. L., Armendano, J. I., and Maleki, N. (2025). A longitudinal analysis on the effect of hormone use on allostatic load in perimenopausal women. Aging and Health Research, 5(1):100213.
 
