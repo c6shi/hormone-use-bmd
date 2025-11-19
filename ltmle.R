@@ -32,8 +32,7 @@ for (i in 1:17){
   print(any(is.na(clean_df[,i])))
 } #no one is missing its baseline covariates, so we don't need the delta nodes for that
 
-
-#dropped the age variables after the baseline because they are deterministic! we can undo this if it seems incorrect 
+#dropped the age variables after the baseline 
 clean_df <- clean_df %>% select(-grep("AGE", names(clean_df), value=TRUE)[-1])
 
 ##### LVCF!! for the intermediate covariates #####
@@ -46,10 +45,10 @@ names(clean_df) <- sub("INSULN\\d?", "INSULIN", names(clean_df)) #fixed insuln t
 #making the level names of all the status columns the same (they are the same thing just written differently and that is messing with things)
 status_cols <- grep("STATUS", names(clean_df), value = TRUE)[-1]
 for (col in status_cols){
-  levels(clean_df[col][[1]]) <- levels(clean_df$STATUS0)
+  levels(clean_df[[col]]) <- levels(clean_df$STATUS0)
 }
 
-#finally... vector with all the col names for the intermediate covariates
+#vector with all the col names for the intermediate covariates
 int_cov <- grep("HORMUSER|SPBMDT|HPBMDT|CSPINE|CHIP", names(clean_df)[-c(1:17)], value = TRUE, invert = TRUE)
 
 #actually doing LVCF
@@ -60,7 +59,19 @@ for (cur_col in int_cov){
   clean_df[cur_col][ind,] <- clean_df[prev_col][ind,] #replaces NAs with value from previous visit
 }
 
+any(is.na(clean_df[int_cov])) #yay 
+
 ##### adding delta A columns, indicator of whether the exposure was measured ###
+treat_cols <- grep("HORMUSER", names(clean_df), value = TRUE)
+
+delta_cols <- sub("USER", "DELTA", treat_cols)
+for (i in seq_along(treat_cols)) {
+  clean_df <- clean_df %>%
+    mutate(
+      !!delta_cols[i] := ifelse(is.na(.data[[treat_cols[i]]]), 0, 1)) %>% #makes the delta col
+    relocate(
+      !!sym(delta_cols[i]), .after = !!sym(treat_cols[i])) #moves it right after the corresponding treatment col
+}
 
 
 
