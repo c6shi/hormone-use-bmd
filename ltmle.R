@@ -73,6 +73,8 @@ for (i in seq_along(treat_cols)) {
       !!sym(delta_cols[i]), .after = !!sym(treat_cols[i])) #moves it right after the corresponding treatment col
 }
 
-
+##### make baseline diabete into 0/1 
+no_diabetes <- levels(clean_df$DIABETE0)[1]
+clean_df$DIABETE0 <- ifelse(clean_df$DIABETE0 == no_diabetes, 0, 1)
 
 
