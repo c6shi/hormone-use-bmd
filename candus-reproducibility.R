@@ -110,7 +110,7 @@ generate.Clean.Data <- function(variable_dict) {
   # Column names needed to remove for finding intermediate covariates
   baseline_cols <- names(clean_df)
   
-  # TODO: delete
+  # TODO: delete bc we need same dimensions for A and C
   # Create censoring variable for baseline
   # clean_df <- clean_df %>%
   #   mutate("CSPINE0" = if_else(is.na(!!sym(baseline_Y0[1])), 0, 1),
@@ -165,7 +165,7 @@ generate.Clean.Data <- function(variable_dict) {
     visit_i_df <- visit_i_df %>%
       select(all_of(c("SWANID", visit_i_W, sprintf("HORMUSER%s", visit), visit_i_Y)))
     
-    # TODO: delete
+    # TODO: delete bc do this later
     # visit_i_df <- visit_i_df %>%
     #   mutate("CSPINE#" = if_else(is.na(!!sym(visit_i_Y[1])), 0, 1),
     #          "CHIP#" = if_else(is.na(!!sym(visit_i_Y[2])), 0, 1)) %>%
@@ -189,9 +189,13 @@ generate.Clean.Data <- function(variable_dict) {
     levels(clean_df[[col]]) <- levels(clean_df$STATUS0)
   }
   
-  # Make baseline diabetes 0/1
+  # Make all diabetes 0/1
   no_diabetes <- levels(clean_df$DIABETE0)[1]
   clean_df$DIABETE0 <- ifelse(clean_df$DIABETE0 == no_diabetes, 0, 1)
+  diabete_cols <- grep("DIABETE", names(clean_df), value=TRUE)[-1]
+  for (col in diabete_cols) {
+    clean_df[[col]] <- ifelse(clean_df[[col]] == no_diabetes, 0, 1)
+  }
   
   ##### LVCF for Intermediate Covariates ########
   final_baseline_col_index <- which(names(clean_df) == "HPBMDT0")

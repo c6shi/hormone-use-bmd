@@ -33,14 +33,14 @@ sample_variable_dict <- list(
   "baseline" = list(
     "covariate" = c("RACE", "AGE0", "HEIGHT0", "WEIGHT0", "STATUS0", "INSULIN0",
                     "SMOKERE0", 
-                    # add alcohol use, 
+                    # add alcohol use "ALCHSRV0 > 0 is 1, ALCHSRV0 = 0 is 0, 
                     sapply(depress_prefix, function(x) paste0(x, 0)),
                     sapply(anxiety_prefix, function(x) paste0(x, 0))),
     "exposure" = c("HORMPIL0"),
     "outcome" = c("SPBMDT0", "HPBMDT0")
   ), 
   "visit" = list(
-    "covariate" = c("HEIGHT", "WEIGHT", "STATUS", "DIABETE", "INSULN1", 
+    "covariate" = c("HEIGHT", "WEIGHT", "STATUS", "DIABETE", "INSULN1", "SMOKERE",
                     # these are missing in some visits: "DRNKBEE", "PHYSACT",
                     "MARITAL", depress_prefix, anxiety_prefix),
     "exposure" = c("COMBIN1", "ESTROG1", "PROGES1", "ESTRNJ1"),
@@ -49,6 +49,7 @@ sample_variable_dict <- list(
 )
 
 data <- generate.Clean.Data(sample_variable_dict)
+write.csv(clean_df, "pre-eda-data.csv", row.names=FALSE)
 # data <- read.csv(here("data", "clean_data.csv"), header=T)
 
 # how to define Anodes, etc. ?
@@ -98,3 +99,40 @@ summary(tmle_fit)
 
 
 ##### Compare! #####
+
+
+##### TRYING DIFFERENT THINGS #####
+
+##### VERSION 1 #####
+# SPBMDT; no shifting, no hip
+spine_no_shift_no_hip <- read.csv('spine_no_shift_no_hip.csv')
+spine_no_shift_no_hip <- spine_no_shift_no_hip %>%
+  select(-SWANID)
+cols <- colnames(spine_no_shift_no_hip)
+
+Anodes <- grep("HORM", names(spine_no_shift_no_hip), value=TRUE)
+Cnodes <- sapply(1:10, function(i) paste0('C_SPBMDT', i))
+Ynodes <- sapply(1:10, function(i) paste0('SPBMDT', i))
+Lnodes <- cols[!cols %in% Anodes & !cols %in% Ynodes & !cols %in% Cnodes]
+Lnodes <- Lnodes[-c(1:which(Lnodes == 'SPBMDT0'))]
+
+# need to change to numerics, add back the physical activity, alcohol vars
+spine_no_shift_no_hip <- spine_no_shift_no_hip %>%
+  mutate(across(where(is.factor), as.numeric))
+
+# ltmle things
+for (col in Cnodes) {
+  spine_no_shift_no_hip[[col]] <- BinaryToCensoring(is.censored = spine_no_shift_no_hip[[col]])
+}
+
+tmle_fit <- ltmle(data = spine_no_shift_no_hip,
+                  Anodes = Anodes,
+                  Cnodes = Cnodes,
+                  Lnodes = Lnodes,
+                  Ynodes = Ynodes,
+                  abar = list(rep(c(1, 0), length(Anodes) %/% 2),
+                              rep(0, length(Anodes))),
+                  SL.library = c('SL.glm', 'SL.earth')
+)
+
+summary(tmle_fit)
