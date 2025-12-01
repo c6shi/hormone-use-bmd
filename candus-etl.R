@@ -274,3 +274,16 @@ for (i in 3:length(all_icpsr)) {
 }
 
 write.csv(clean_df, here("data", "both_outcome_no_shift.csv"), row.names=FALSE)
+
+shift_clean_df <- copy(clean_df)
+shift_cols <- paste0(c("D_HORMUSER", "HORMUSER"), rep(c(0:9), each=2))
+for (col in shift_cols) {
+  current_visit <- as.numeric(substr(col, nchar(col), nchar(col)))
+  next_col <- paste0(substr(col, 1, nchar(col) - 1), current_visit + 1)
+  shift_clean_df[col] <- shift_clean_df[next_col]
+}
+
+shift_clean_df <- shift_clean_df %>%
+  select(-c(D_HORMUSER0, D_HORMUSER10, HORMUSER10))
+
+write.csv(shift_clean_df, here("data", "both_outcome_w_shift.csv"), row.names=FALSE)
