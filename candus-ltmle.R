@@ -131,3 +131,40 @@ hist(fit4$cum.g.unbounded[,,1][,5])
 # 95% CI: (0.029681, 0.073732)
 # Interpretation: using hormone increases BMD
 # many positivity violations
+
+# Stuff for presentation
+fit4$Qstar
+fit4$
+
+
+# try default SL; will exit before completion, this takes so long!
+fit5 <- ltmle(data = spine_w_shift_w_hip,
+              Anodes = Anodes,
+              Cnodes = Cnodes,
+              Lnodes = Lnodes,
+              Ynodes = Ynodes,
+              abar = list(abar1, abar0),
+              SL.library = 'default')
+summary(fit5)
+
+# try a more tailored SL; uhh so ended up with a larger library :\
+fit6 <- ltmle(data = spine_w_shift_w_hip,
+              Anodes = Anodes,
+              Cnodes = Cnodes,
+              Lnodes = Lnodes,
+              Ynodes = Ynodes,
+              abar = list(abar1, abar0),
+              SL.library = list("SL.glm", "SL.glm.interaction", "SL.earth", "SL.ranger",
+                                # c("SL.glm", "screen.glmnet"),
+                                # c("SL.glm.interaction", "screen.glmnet"),
+                                # c("SL.earth", "screen.glmnet"),
+                                # c("SL.ranger", "screen.glmnet"),
+                                c("SL.glm", "screen.corP"),
+                                c("SL.glm.interaction", "screen.corP"),
+                                c("SL.earth", "screen.corP"),
+                                c("SL.ranger", "screen.corP")
+                                # c("SL.glm", "screen.randomForest"),
+                                # c("SL.glm.interaction", "screen.randomForest"),
+                                # c("SL.earth", "screen.randomForest"),
+                                # c("SL.ranger", "screen.randomForest")
+                                ))
