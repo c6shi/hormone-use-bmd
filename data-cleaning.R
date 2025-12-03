@@ -273,20 +273,41 @@ chip_cols %>% filter(CHIP10 == 1, rowSums(chip_cols) != 11) #huh there might be 
 
 #now we will do LVCF on the SPBMDT (spine outcome) columns 
 spine_cols <- grep("SPBMDT", names(clean_df), value = TRUE)[-1]
-test_df <- clean_df
+
 for (cur_col in spine_cols){
   i <- as.numeric(regmatches(cur_col, regexpr('\\d+', cur_col))) #extracts the number at the end of the column name
   prev_col <- paste(regmatches(cur_col, regexpr('[[:alpha:]]+', cur_col)), i-1, sep = "") #gets the name of the column from the previous visit
   ind <- which(is.na(clean_df[cur_col]) & !is.na(clean_df$SPBMDT10)) #index of which values are NA and need to get replaced, but only if the outcome at the last timepoint is not missing
-  test_df[cur_col][ind,] <- clean_df[prev_col][ind,] #replaces NAs with value from previous visit
+  clean_df[cur_col][ind,] <- clean_df[prev_col][ind,] #replaces NAs with value from previous visit
 }
 
-View(test_df)
+#LVCF on the HPBMDT (hip outcome) columns
+hip_cols <- grep("HPBMDT", names(clean_df), value = TRUE)[-1]
+
+for (cur_col in hip_cols){
+  i <- as.numeric(regmatches(cur_col, regexpr('\\d+', cur_col))) #extracts the number at the end of the column name
+  prev_col <- paste(regmatches(cur_col, regexpr('[[:alpha:]]+', cur_col)), i-1, sep = "") #gets the name of the column from the previous visit
+  ind <- which(is.na(clean_df[cur_col]) & !is.na(clean_df$HPBMDT10)) #index of which values are NA and need to get replaced, but only if the outcome at the last timepoint is not missing
+  clean_df[cur_col][ind,] <- clean_df[prev_col][ind,] #replaces NAs with value from previous visit
+}
+
+## lvcf for the outcome currently doesn't fill in NAs if visit 10 is NA. probably need to fix this? also need to figure out what we are doing with the C nodes if we've imputed the values
 
 
-View(clean_df %>% select(grep("SPBMDT", names(clean_df), value = TRUE)))
-View(test_df %>% select(grep("SPBMDT", names(clean_df), value = TRUE)))
-## 11/26 notes, need to fix LVCF code to handle two NAs in a row properly, then do the hip columns, then do one-hot encoding
+##### dealing with factor variables: phy_act, marital, degree, race, status through visit 10
+
+#physical activity
+levels(clean_df$PHY_ACT) <- seq(1,5) # 1 is less activity, 5 is most activity
+clean_df$PHY_ACT <- as.integer((clean_df$PHY_ACT))
+
+#degree
+levels(clean_df$DEGREE) <- 1:5
+clean_df$DEGREE <- as.integer((clean_df$DEGREE))
+
+#marital status
+levels(clean_df$MARITAL0) <- seq(0,3)
+clean_df <- clean_df %>% mutate(across(contains("MARITAL"), ~ ifelse(. == 4, 2, .)))
+table(clean_df$MARITAL0)
 
 write.csv(clean_df, here("data", "clean_data.csv"), row.names=F)
 
