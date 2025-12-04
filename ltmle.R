@@ -44,3 +44,38 @@ baselinefit$fit$Q[[2]]
 
 #influence curve looks ok i think!
 
+#########################################
+
+#final results:
+results <- data.frame(ate = c(0.022429, 0.061827, 0.062104), ci.low = c(-0.028455, 0.038746, 0.039559), 
+                      ci.high = c(0.073313, 0.084908, 0.084648),
+                      Model = factor(c("Difference in means", "SL reduced", "SL full"), levels = c("Difference in means", "SL reduced", "SL full")))
+
+
+ggplot(results, aes(x = Model, y = ate, color = Model)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = ci.low, ymax = ci.high), 
+                width = 0.2, linewidth = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray40") +
+  scale_color_manual(values = rep('darkcyan', 3)) +
+  theme_light() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    axis.title.x = element_text(margin = margin(t = 12), size = 14),
+    axis.title.y = element_text(size = 12),
+    axis.text.x  = element_text(size = 10, margin = margin(t = 6)),
+    axis.text.y  = element_text(size = 10),
+    legend.position = "none"
+  ) +
+  labs(
+    x = "Model",
+    y = "ATE (with 95% CI)",
+    title = "ATE of Hormone Use on Spine Bone Marrow Density"
+  )
+
+
+
+
+
+
+
