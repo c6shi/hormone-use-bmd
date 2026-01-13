@@ -168,3 +168,35 @@ fit6 <- ltmle(data = spine_w_shift_w_hip,
                                 # c("SL.earth", "screen.randomForest"),
                                 # c("SL.ranger", "screen.randomForest")
                                 ))
+
+fit7 <- ltmle(data = final_df,
+              Anodes = Anodes,
+              Cnodes = Cnodes,
+              Lnodes = Lnodes,
+              Ynodes = Ynodes,
+              abar = list(abar1, abar0),
+              gbounds = c(bound, 1-bound),
+              SL.library = list(
+                "SL.glm", "SL.earth",
+                c("SL.glm", "screen.corP"),
+                c("SL.earth", "screen.corP")
+              ))
+summary(fit7)
+hist(fit7$IC[,1])
+head(fit7$cum.g.unbounded)
+hist(fit7$cum.g.unbounded[,,1][,7])
+
+fit8 <- ltmle(data = final_df,
+              Anodes = Anodes,
+              Cnodes = Cnodes,
+              Lnodes = Lnodes,
+              Ynodes = Ynodes,
+              abar = list(abar1, abar0),
+              gbounds = c(bound, 1-bound),
+              SL.library = list(
+                "SL.glm", "SL.earth", "SL.mean",
+                c("SL.glm", "screen.corP"),
+                c("SL.earth", "screen.corP"),
+                c("SL.mean", "screen.corP")))
+                
+              
