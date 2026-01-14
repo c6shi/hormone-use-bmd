@@ -57,3 +57,6 @@ rsconnect/
 # IDEA folder
 .idea
 docs/.idea
+
+# Gemfile.lock
+docs/Gemfile.lock
