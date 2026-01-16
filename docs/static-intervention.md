@@ -80,6 +80,6 @@ before visit 10 were null).
 Interpretation: 1,167 women were never on HRTs (including visits with nulls; note
 the difference with the 797 number from above is after filtering all women with any nulls). 
 174 women were on HRTs for exactly one visit, 112 women were on HRTs for exactly two visits, etc. 
-Again, these might not be accurate since there were women with null visits.   
+Again, these might not be accurate since there were women with null visits.
 
 ## Results
