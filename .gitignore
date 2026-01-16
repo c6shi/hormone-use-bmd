@@ -20,7 +20,6 @@
 
 # RStudio files
 .Rproj.user/
-hormone-use-bmd.Rproj
 
 # produced vignettes
 vignettes/*.html

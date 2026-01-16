@@ -1,7 +1,9 @@
-# L-TMLE on Alebna et al. 2025
-PBHLTH 243A Fall 2025 Research Project
+# Finding the Effect of HRTs on BMD in Menopausal Women Using L-TMLE
+PBHLTH 243A Fall 2025 Research Project (Ongoing)
 
-We further explore different types of interventions which results in different statistical questions. 
+We further explore different types of interventions which results in different statistical questions.
+
+Also check out https://c6shi.github.io/hormone-use-bmd/ for more information.
 
 # Data:
 We use the SWAN data publicly available on ICPSR: https://www.icpsr.umich.edu/web/ICPSR/series/253/studies. 
