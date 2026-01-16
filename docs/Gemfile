@@ -1,3 +1,10 @@
 source 'https://rubygems.org'
-gem 'github-pages', group: :jekyll_plugins
-gem 'webrick'
+gem 'github-pages', '~> 232', group: :jekyll_plugins
+gem 'webrick', '~> 1.7'
+gem 'csv'
+gem 'bigdecimal'
+gem 'faraday-retry'
+gem 'liquid', '~> 4.0.4'
+gem 'jekyll', '~> 3.10.0'
+gem 'jekyll-default-layout'
+gem 'just-the-docs', '~> 0.11.1'

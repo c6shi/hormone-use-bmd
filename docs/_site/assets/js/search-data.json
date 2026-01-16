@@ -1,0 +1,86 @@
+{"0": {
+    "doc": "Background",
+    "title": "Background",
+    "content": "Menopause is a part of the aging process that most women go through. It can be broken down into three stages: . | Perimenopause (menopausal transition): Reproductive hormones change irregularly, menstrual periods become more irregular, and menopausal symptoms start to develop; typically 3-7 years before menopause. | Menopause: No menstrual period for 12 months. | Postmenopause: After 12 months of no menstruation. | . During this transition, many women may experience menopausal symptoms caused by a drop in hormone levels, specifically estrogen and progesterone. These include hot flashes, night sweats, vaginal dryness, mood changes, sleeping problems, memory problems, and more. To alleviate these symptoms, doctors can prescribe hormone replacement therapies (HRTs) to replace the drop in hormones, but a 2002 women’s health study (widely known as the Women’s Health Initiative (WHI) study) found HRTs to be associated with an increased risk of breast cancer, cardiovascular disease, and stroke, making HRTs a bit controversial. Recently, the FDA remove black box warnings on HRTs citing … . Prior to the WHI study results, HRTs were also used to prevent osteoporosis due to the positive effect of estrogen on bone mineral density (cite paper). Other observational studies have found a … . Given the limitations of the data available on menopausal women, we cannot really investigate the effects of HRTs on certain health outcomes that the WHI study examined such as … So, in this project we aim to quantify the effect of HRTs on BMD in menopausal women, knowing that current literature and science supports a positive effect. ",
+    "url": "/hormone-use-bmd/background/",
+    
+    "relUrl": "/background/"
+  },"1": {
+    "doc": "Background",
+    "title": "A Brief Digression on the WHI Study",
+    "content": "Throughout my research on this topic, I found many articles citing the design issues with the WHI study. Following the FDA’s decision to remove the black box warnings, I also found the WHI’s response to the FDA. Here is a summary of what I found. ",
+    "url": "/hormone-use-bmd/background/#a-brief-digression-on-the-whi-study",
+    
+    "relUrl": "/background/#a-brief-digression-on-the-whi-study"
+  },"2": {
+    "doc": "Data: SWAN",
+    "title": "Data: SWAN",
+    "content": "We use data from the Study of Women’s Health Across the Nation (SWAN) which is a longitudinal study that began in 1997 to understand women’s health during perimenopause particularly in ethnic minority groups in the U.S. due to the lack of data in these populations. They chose seven cities in the U.S. and for each city, an ethnic minority group to compare against white women: . | Non-Hispanic Caucasian women in all cities | African American women in Detroit, MI, Chicago, IL, Boston, MA, and Pittsburgh, PA | Chinese women in Oakland, CA | Hispanic women in Newark, NJ | Japanese women in Los Angeles, CA | . After a screening process from a cross-sectional study, xxx women were identified to be eligible for the longitudinal study which involved annual examinations of questionnaires, blood and urine specimen collection, and physical measures. Furthermore, annual examinations were scheduled for days 2-5 after bleeding started to standardize serum hormone measure to the early phase of the menstrual cycle. It should also be noted that due to the irregularity in hormone levels during perimenopause, the measurement of hormone levels can often be quite different from day-to-day (check on this for the early phase). Data from 1997-2008 is publicly available on ICPSR (no site variable or specimen data), though the study is still ongoing today. ",
+    "url": "/hormone-use-bmd/data/",
+    
+    "relUrl": "/data/"
+  },"3": {
+    "doc": "Data: SWAN",
+    "title": "Our Setup",
+    "content": "There were many variables collected in the SWAN dataset. Since we are interested in HRTs and BMD, we handpicked a few variables to be included in our analysis, as including too many covariates in L-TMLE will be too computationally intensive given our available resources. ",
+    "url": "/hormone-use-bmd/data/#our-setup",
+    
+    "relUrl": "/data/#our-setup"
+  },"4": {
+    "doc": "Data: SWAN",
+    "title": "Variables",
+    "content": "Certain baseline and time-varying covariates were chosen based on what is known to be predictive of BMD. | Baseline covariates: age, race/ethnicity, and education. | Time-varying covariates: menopausal status, anxiety, depression, height, weight, alcohol consumption, smoking, physical activity, diabetes status, insulin usage, and missingness at the visit. | Exposure: use of HRTs since last visit, indicator variable denoted \\(A(t)\\). | Combination estrogen/progestin, e.g. Premphase or Prempro, OR | Estrogen pills, e.g. Premarin, Estrace, or Ogen, OR | Estrogen by injection or path, e.g. Estraderm, OR | Progestin pills, e.g. Provera | . | Outcome: BMD at the lumbar spine (LS) and total hip (TH), denoted \\(Y(t)\\). | For these two outcomes, we run the analysis separately for both, and include the other outcome as a time-varying covariate. | . | Censoring: true right-censoring for the outcome, i.e. loss to follow up, denoted \\(C(t)\\). | . ",
+    "url": "/hormone-use-bmd/data/#variables",
+    
+    "relUrl": "/data/#variables"
+  },"5": {
+    "doc": "Data: SWAN",
+    "title": "Data Structure",
+    "content": "Following our typical \\(O = (W, A, Y)\\) data structure, we have this longitudinal data structure: . \\[O = (W, A(1), L(1), C(1), Y(1), \\dots, A(10), L(10), C(10), Y(10))\\] Note that we switch the order of the \\(A\\)’s and the \\(L\\)’s because all of the treatment, covariate, and outcome data are collected at the “same time” at each visit. Additionally, some variables are questions about xyz since the last visit or within the past few weeks, e.g. anxiety, depression, insulin, smoking, etc., whereas some other variables are values collected exactly at the visit, e.g. height, weight, BMD. So, we have some ambiguity in the time-ordering. ",
+    "url": "/hormone-use-bmd/data/#data-structure",
+    
+    "relUrl": "/data/#data-structure"
+  },"6": {
+    "doc": "Data: SWAN",
+    "title": "Data Cleaning",
+    "content": "Recall that SWAN collected data from seven cities. However, two of the seven cities did not measure BMD: Chicago and Newark. Since site information is not publicly available, we clean based on missingness and end up with a dataset of 1,804 women. All data cleaning steps can be found in data-cleaning.R in the git repo. Missingness . We distinguish between missing data and right-censoring. For the missingness variable, should we distinguish between missing anything vs missing exposure? Because missing exposure seems more important than missing a covariate. ",
+    "url": "/hormone-use-bmd/data/#data-cleaning",
+    
+    "relUrl": "/data/#data-cleaning"
+  },"7": {
+    "doc": "Home",
+    "title": "The Effect of Hormone Replacement Therapies on Bone Mineral Density in Menopausal Women",
+    "content": "Last Updated: January 2026 . This is a project that EH and I worked on for PBHLTH 243A: Targeted Learning during the Fall 2025 semester at UC Berkeley. After presenting it to our class, we received suggestions and have implemented them here. This website is a collection of documentation on our thought process and justification for the usage of certain methods. We would like to thank KL and MvdL for their guidance and expertise. Of course, since we learned about TMLE in the course, the goal of this project is to demonstrate the usage of TMLE and follow the causal roadmap in a real-world setting. ",
+    "url": "/hormone-use-bmd/#the-effect-of-hormone-replacement-therapies-on-bone-mineral-density-in-menopausal-women",
+    
+    "relUrl": "/#the-effect-of-hormone-replacement-therapies-on-bone-mineral-density-in-menopausal-women"
+  },"8": {
+    "doc": "Home",
+    "title": "Home",
+    "content": " ",
+    "url": "/hormone-use-bmd/",
+    
+    "relUrl": "/"
+  },"9": {
+    "doc": "Method: L-TMLE",
+    "title": "Method: L-TMLE",
+    "content": "To understand longitudinal TMLE (L-TMLE), we first need to understand regular TMLE. TMLE . L-TMLE: ICE . Why L-TMLE is better compared to other longitudinal analysis methods . ",
+    "url": "/hormone-use-bmd/method/",
+    
+    "relUrl": "/method/"
+  },"10": {
+    "doc": "Attempt 1: Static Intervention",
+    "title": "Attempt 1: Static Intervention",
+    "content": "The first thing we tried was investigating the causal effect under a static intervention for all time points. We define the following items for the causal roadmap: . | Statistical model, \\(\\mathcal M\\): Since this is observational data, we have no real knowledge on the exposure mechanism and its conditional probabilities. So, we specify the statistical model to be the nonparametric statistical model, \\(\\mathcal M_{np}\\). | Target estimand: What would be the mean difference in spine/hip BMD if all perimenopausal women were on HRTs at all time points versus if no perimenopausal women were on HRTs at any of the time points? | Target Parameter, \\(\\psi\\): \\(\\Psi(P_0) = E_0 [Y^{\\bar a = 1, \\bar c= 0} - Y^{\\bar a = 0, \\bar c = 0}]\\) where . | \\(Y^{\\bar a=1, \\bar c=0}\\) is the counterfactual spine/hip BMD of women if they had taken HRT and were uncensored at all time points | \\(Y^{\\bar a=0, \\bar c=0}\\) is the counterfactual spine/hip BMD of women if they never took HRT and were uncensored at all time points | . | . This is not really a realistic intervention and faces a lot of positivity issues. In particular, 797 women were never on HRTs for 10 years (this corresponds to the counterfactual outcome \\(Y^{\\bar a=0, \\bar c=0}\\)), and only 12 women were continuously on HRTs for 10 years (this corresponds to the counterfactual outcome \\(Y^{\\bar a=1, \\bar c=0}\\)). Furthermore, with the number of covariates we have, the latter group will surely run into positivity violations. Let’s take a look at the distribution of exposure and see how many individuals we have at each visit and for how long they are on the treatment. Table 1: Number of women in each treatment group at each visit . | On HRTs Since Last Visit | 0 (Baseline) | Visit 1 | Visit 2 | Visit 3 | Visit 4 | Visit 5 | Visit 6 | Visit 7 | Visit 8 | Visit 9 | Visit 10 | . | No (0) | 1804 | 1682 | 1495 | 1389 | 1314 | 1258 | 1276 | 1366 | 1374 | 1397 | 1399 | . | Yes (1) | 0 | 122 | 204 | 260 | 306 | 338 | 340 | 216 | 160 | 133 | 125 | . | Total | 1804 | 1804 | 1699 | 1649 | 1620 | 1596 | 1616 | 1582 | 1534 | 1530 | 1524 | . There is a pretty noticeable imbalance between the two treatment groups at each visit. We expect to see no women in the HRT user group at baseline because one of our criteria for filtering was all women did not have any HRT usage prior to starting the longitudinal study. The least imbalance excluding baseline was at visit 5 with 78.8% in the no HRT user group and 21.2% in the HRT user group. The most imbalance excluding baseline was at visit 1 with 93.2% in the no HRT user group and 6.8% in the HRT user group. We also had the least nulls in visit 1 with 0 nulls and the most nulls in visit 10 with 280 nulls (15.5% of starting sample). Table 2: Number of women that started HRTs at each visit . | 0 (Baseline) | Visit 1 | Visit 2 | Visit 3 | Visit 4 | Visit 5 | Visit 6 | Visit 7 | Visit 8 | Visit 9 | Visit 10 | . | 0 | 122 | 116 | 108 | 86 | 74 | 51 | 22 | 26 | 11 | 17 | . Interpretation: 122 women started HRTs at visit 1, 116 women started HRTs at visit 2, etc. Note that this does not say anything about the duration, e.g. women may have started HRTs at visit 1, then never used HRTs ever again. Also, 17 women began using HRTs at visit 10. We might want to know why those 17 women started HRTs late, e.g. what is their age, are they still in perimenopause, etc. These include women that may have nulls in some visits. So, there may be more than 17 women (if there were women who truly started HRTs at visit 10 but their visit 10 value was null) or less than 17 women (if there were women who truly started HRTs before visit 10, but their visits before visit 10 were null). Table 3: Number of women on HRTs for each visit length . | 0 (No HRTs) | 1 Visit | 2 Visits | 3 Visits | 4 Visits | 5 Visits | 6 Visits | 7 Visits | 8 Visits | 9 Visits | 10 Visits | . | 1167 | 174 | 112 | 85 | 69 | 58 | 55 | 24 | 26 | 17 | 12 | . Interpretation: 1,167 women were never on HRTs (including visits with nulls; note the difference with the 797 number from above is after filtering all women with any nulls). 174 women were on HRTs for exactly one visit, 112 women were on HRTs for exactly two visits, etc. Again, these might not be accurate since there were women with null visits. ",
+    "url": "/hormone-use-bmd/static-intervention/",
+    
+    "relUrl": "/static-intervention/"
+  },"11": {
+    "doc": "Attempt 1: Static Intervention",
+    "title": "Results",
+    "content": " ",
+    "url": "/hormone-use-bmd/static-intervention/#results",
+    
+    "relUrl": "/static-intervention/#results"
+  }
+}

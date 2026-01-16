@@ -1,12 +1,15 @@
-# EDA
+# ETL
 library(here)
 library(dplyr)
 library(tidyverse)
 library(data.table)
+library(caret)
+library(zoo)
 
 
 ##### LOAD DATA #####
 all_icpsr <- list.dirs(here("data"), full.names=F, recursive=F)
+all_icpsr <- all_icpsr[sapply(all_icpsr, function(x) startsWith(x, "ICPSR"))]
 
 for (icpsr in all_icpsr) {
   rda <- here("data", icpsr, "DS0001", sprintf("%s-0001-Data.rda", substr(icpsr, 7, 12)))
@@ -31,6 +34,11 @@ depress_prefix <- c("BOTHER", "APPETIT", "BLUES", "GOOD",
                     "CRYING", "SAD", "DISLIKE", "GETGOIN")
 anxiety_prefix <- c("IRRITAB", "NRVOUS", "HARTRAC", "FEARFULA")
 
+baseline_W0_inscreener <- c("DIABETE",
+                            "PHY_ACT",
+                            "MARITALGP",
+                            "DEGREE")
+
 baseline_W0_inbaseline <- c("RACE", 
                             "AGE0", 
                             "HEIGHT0", 
@@ -38,35 +46,31 @@ baseline_W0_inbaseline <- c("RACE",
                             "STATUS0", 
                             "INSULIN0",
                             "SMOKERE0",
-                            # alcohol use "",
+                            "ALCHSRV0",
                             sapply(depress_prefix, function(x) paste0(x, 0)),
                             sapply(anxiety_prefix, function(x) paste0(x, 0)))
 baseline_W0_inbaseline <- stack(baseline_W0_inbaseline)$values
 
-baseline_W0_inscreener <- c("DIABETE",
-                            "PHY_ACT",
-                            "MARITALGP",
-                            "DEGREE")
-
 # TIME-VARYING COVARIATES
-visit_W <- c("AGE", 
-             "HEIGHT",
+visit_W <- c("HEIGHT",
              "WEIGHT",
              "STATUS", 
              "DIABETE",
              "INSULN1",
-             # "DRNKBEE",
-             # "PHYSACT",
+             "SMOKERE",
+             "DRNKBEE",
+             "PHYSACT",
              "MARITAL",
              depress_prefix,
              anxiety_prefix)
 
 
-##### CONSTRUCT COHORT FROM BASELINE #####
-# We start with N=3302 participants at baseline. 
+##### Construct Cohort from Baseline ##########
+# We start with N=3302 participants at baseline.
 
 # Add screener variables to baseline dataframe
-screener_df <- da04368.0001[da04368.0001$SWANID %in% da28762.0001$SWANID, c("SWANID", baseline_W0_inscreener)]
+screener_df <- da04368.0001[da04368.0001$SWANID %in% da28762.0001$SWANID, 
+                            c("SWANID", baseline_W0_inscreener)]
 
 # Obtain participants that are 
 # 1) pre-menopausal or early peri-menopausal, and 
@@ -83,7 +87,7 @@ baseline_df <- baseline_df %>%
 
 # Remove women with 
 # 1) NA hormone usage in visit 1 (cannot assess use of hormones between baseline and visit 1), and 
-# 2) missing baseline covariates. (N = 2689)
+# 2) missing baseline covariates. (N=2574)
 visit1_A <- sapply(A_prefix, function(x) paste0(x, 1))
 visit1_hormone_df <- da29221.0001 %>% 
   filter_at(vars(visit1_A), all_vars(!is.na(.)))
@@ -94,60 +98,80 @@ baseline_df <- baseline_df %>%
   filter_at(vars(baseline_W0_inbaseline), all_vars(!is.na(.)))
 
 # Remove women with 
-# 1) NA SPBMDT0 and HPBMDT0 because we assume they were null as two sites did not measure BMD
+# 1) NA SPBMDT0 and HPBMDT0 because we assume they were null as two sites did not measure BMD (N=1860)
 baseline_df <- baseline_df %>%
   filter_at(vars(SPBMDT0, HPBMDT0), all_vars(!is.na(.)))
-  
 
-# Rename exposure variable, convert all factors except RACE & STATUS to numerics - 1, create depression & anxiety variable
+##### Feature Engineering #####################
+
+# Change ALCHSRV0 to a 0/1 indicator of alcohol use
+baseline_df$ALCHSRV0 <- as.numeric(baseline_df$ALCHSRV0 > 0)
+
+# Create depression and anxiety variables
 baseline_depress0 <- stack(sapply(depress_prefix, function(x) paste0(x, 0)))$values
 baseline_anxiety0 <- stack(sapply(anxiety_prefix, function(x) paste0(x, 0)))$values
+
+# Convert factor variables to numerics - 1
 baseline_Y0 <- stack(sapply(Y_prefix, function(x) paste0(x, 0)))$values
-baseline_factor_minus1 <- c(baseline_W0_inbaseline[-c(1:5)], "HORMUSER0")
+baseline_factor_minus1 <- c(baseline_W0_inbaseline[!baseline_W0_inbaseline %in% c("RACE", "AGE0", "HEIGHT0", "WEIGHT0", "STATUS0", "ALCHSRV0")], "HORMUSER0")
 baseline_df <- baseline_df %>%
   rename("HORMUSER0" = "HORMPIL0") %>%
   select(all_of(c("SWANID", baseline_W0_inbaseline, "HORMUSER0", baseline_Y0))) %>%
   mutate(across(all_of(baseline_factor_minus1), as.numeric)) %>%
-    mutate(across(all_of(baseline_factor_minus1), ~ . -1)) %>%
+  mutate(across(all_of(baseline_factor_minus1), ~ . -1)) %>%
   rowwise() %>%
-    mutate("DEPRESSION0" = sum(c_across(all_of(baseline_depress0))),
-           "ANXIETY0" = sum(c_across(all_of(baseline_anxiety0)))) %>%
-    ungroup()
+  mutate("DEPRESSION0" = sum(c_across(all_of(baseline_depress0))),
+         "ANXIETY0" = sum(c_across(all_of(baseline_anxiety0)))) %>%
+  ungroup()
 
-baseline_W0 <- c("RACE", 
-                 "AGE0", 
-                 "HEIGHT0", 
-                 "WEIGHT0", 
-                 "STATUS0", 
-                 "INSULIN0",
-                 "SMOKERE0",
-                 # alcohol use "",
-                 "DEPRESSION0",
-                 "ANXIETY0")
+# Remove depression and anxiety questions
+baseline_df <- baseline_df %>%
+  select(-all_of(c(baseline_depress0, baseline_anxiety0)))
 
+# One hot encode RACE
+race_one_hot <- model.matrix(~ RACE-1, baseline_df)[, 1:3]
+baseline_df <- baseline_df %>%
+  select(-"RACE") %>%
+  cbind(race_one_hot)
+
+# Reorder columns for LTMLE (L's, A's, Y's)
+baseline_W0 <- names(select(baseline_df, -all_of(c("SWANID", "HORMUSER0", baseline_Y0))))
+baseline_W0 <- c(tail(baseline_W0, 3), head(baseline_W0, -3))
 baseline_df <- baseline_df %>%
   select(all_of(c("SWANID", baseline_W0, "HORMUSER0", baseline_Y0)))
 
+# Get screener variables for individuals in baseline_df
 screener_df <- screener_df %>%
   filter_at(vars(baseline_W0_inscreener), all_vars(!is.na(.))) %>%
   select(c(SWANID, baseline_W0_inscreener)) 
-  # mutate(across(where(is.factor), as.numeric))
+# mutate(across(where(is.factor), as.numeric))
 
 # Merge screener dataframe and filtered baseline dataframe
 clean_df <- merge(screener_df, baseline_df, by="SWANID")
 
-# Create censoring variable for baseline
+# Ordinal encoding and fix DIABETE
+ordinal_cols <- c("PHY_ACT", "MARITALGP", "DEGREE", "STATUS0")
 clean_df <- clean_df %>%
-  mutate("CSPINE0" = if_else(is.na(!!sym(baseline_Y0[1])), 0, 1),
-         "CHIP0" = if_else(is.na(!!sym(baseline_Y0[2])), 0, 1)) 
+  mutate(across(all_of(c("DIABETE", ordinal_cols)), as.numeric)) %>%
+  mutate(across(all_of(c("DIABETE", ordinal_cols)), ~ . -1)) %>%
+  rowwise()
 
-# Same thing as above, another way to do dynamic variables
-# clean_df <- clean_df %>%
-#   mutate("CSPINE0" = if_else(is.na(.data[[baseline_Y0[1]]]), 0, 1),
-#          "CHIP0" = if_else(is.na(.data[[baseline_Y0[2]]]), 0, 1)) 
+# Rename some baseline L's to match visit L's
+clean_df <- clean_df %>%
+  rename("AGE" = "AGE0",
+         "DRNKBEE0" ="ALCHSRV0",
+         "PHYSACT0" = "PHY_ACT", 
+         "MARITAL0" = "MARITALGP",
+         "DIABETE0" = "DIABETE")
+
+# Final reorder
+W <- c("AGE", colnames(race_one_hot), "DEGREE")
+L0 <- colnames(clean_df)[!colnames(clean_df) %in% W][-c(1, (ncol(clean_df) - length(W) - 2):(ncol(clean_df) - length(W)))]
+clean_df <- clean_df %>%
+  select(all_of(c("SWANID", W, L0, "HORMUSER0", baseline_Y0)))
 
 
-##### ADDING EACH VISIT #####
+##### Add Each Visit ##########################
 for (i in 3:length(all_icpsr)) {
   icpsr <- all_icpsr[i]
   code <- substr(icpsr, 7, 12)
@@ -155,17 +179,43 @@ for (i in 3:length(all_icpsr)) {
   
   print(c(code, visit))
   
-  visit_i_W <- stack(sapply(visit_W, function(x) paste0(x, visit)))$values
-  visit_i_A <- stack(sapply(A_prefix, function(x) paste0(x, visit)))$values
-  visit_i_Y <- stack(sapply(Y_prefix, function(x) paste0(x, visit)))$values
+  visit_i_W <- paste(visit_W, visit, sep="")
+  visit_i_A <- paste(A_prefix, visit, sep="")
+  visit_i_Y <- paste(Y_prefix, visit, sep="")
   visit_i_df <- eval(parse(text=paste(sprintf("da%s.0001", code))))
-  visit_i_df <- visit_i_df %>%
-    select(all_of(c("SWANID", visit_i_W, visit_i_A, visit_i_Y)))
+  visit_i_df <- tryCatch(
+    visit_i_df <- visit_i_df %>%
+      select(all_of(c("SWANID", visit_i_W, visit_i_A, visit_i_Y))),
+    error = function(cond) {
+      message(conditionMessage(cond))
+      visit_i_df <- visit_i_df %>%
+        select(any_of(c("SWANID", visit_i_W, visit_i_A, visit_i_Y)))
+      visit_i_missing_W <- setdiff(c(visit_i_W, visit_i_A, visit_i_Y), 
+                                   colnames(visit_i_df))
+      for (missing_col in visit_i_missing_W) {
+        visit_i_df[missing_col] <- NA
+      }
+      message("Imputed missing columns.")
+      return(visit_i_df)
+      },
+    warning = function(cond) {
+      message(conditionMessage(cond))
+      NULL
+    },
+    finally = {
+      message("Working...")
+    }
+  )
+
   
-  visit_i_depress <- stack(sapply(depress_prefix, function(x) paste0(x, visit)))$values
-  visit_i_anxiety <- stack(sapply(anxiety_prefix, function(x) paste0(x, visit)))$values
+  # Create depression and anxiety variables
+  visit_i_depress <- paste(depress_prefix, visit, sep="")
+  visit_i_anxiety <- paste(anxiety_prefix, visit, sep="")
   
-  visit_i_W_factor_minus1 <- c(visit_i_W[-c(1:4)], visit_i_A)
+  # Convert factor variables to numerics - 1
+  visit_W_factor <- visit_W[!visit_W %in% c("HEIGHT", "WEIGHT", "STATUS", "PHYSACT", "MARITAL")]
+  visit_i_W_factor_minus1 <- paste(visit_W_factor, visit, sep="")
+  visit_i_W_factor_minus1 <- c(visit_i_W_factor_minus1, visit_i_A)
   visit_i_df <- visit_i_df %>%
     mutate(across(all_of(visit_i_W_factor_minus1), as.numeric)) %>%
     mutate(across(all_of(visit_i_W_factor_minus1), ~ . -1)) %>%
@@ -180,134 +230,120 @@ for (i in 3:length(all_icpsr)) {
     ungroup() %>%
     rename_with(~gsub("#", visit, .x, fixed=T))
   
-  visit_i_W <- c("AGE", 
-                 "HEIGHT",
-                 "WEIGHT",
-                 "STATUS", 
-                 "DIABETE",
-                 "INSULN1",
-                 # "DRNKBEE",
-                 # "PHYSACT",
-                 "MARITAL",
-                 "DEPRESSION",
-                 "ANXIETY")
-  visit_i_W <- stack(sapply(visit_i_W, function(x) paste0(x, visit)))$values
-  
+  # Remove depression, anxiety, and exposure questions
   visit_i_df <- visit_i_df %>%
-    select(all_of(c("SWANID", visit_i_W, sprintf("HORMUSER%s", visit), visit_i_Y)))
+    select(-all_of(c(visit_i_depress, visit_i_anxiety, visit_i_A)))
   
+  # Ordinal encoding
+  ordinal_cols <- setdiff(c(visit_i_W, visit_i_A), visit_i_W_factor_minus1)[-c(1, 2)]
   visit_i_df <- visit_i_df %>%
-    mutate("CSPINE#" = if_else(is.na(!!sym(visit_i_Y[1])), 0, 1),
-           "CHIP#" = if_else(is.na(!!sym(visit_i_Y[2])), 0, 1)) %>%
-    rename_with(~gsub("#", visit, .x, fixed=T))
+    mutate(across(all_of(ordinal_cols), as.numeric)) %>%
+    mutate(across(all_of(ordinal_cols), ~ . -1)) %>%
+    rowwise()
   
-  # left join with baseline
+  # Create missingness indicators for covariates and exposure separately (these are part of the covariates)
+  # Create censoring (truly right-censoring, LTFU) for outcomes
+  visit_i_cols <- colnames(visit_i_df)
+  visit_i_W <- visit_i_cols[!visit_i_cols %in% visit_i_Y & visit_i_cols != paste0("HORMUSER", visit) & visit_i_cols != "SWANID"]
+  visit_i_df[[paste0("D_TVCOV", visit)]] <- as.numeric(apply(visit_i_df[visit_i_W], 1, function(x) any(is.na(x))))
+  visit_i_df[[paste0("D_HORMUSER", visit)]] <- as.numeric(is.na(visit_i_df[[paste0("HORMUSER", visit)]]))
+  visit_i_df[[paste0("C_", visit_i_Y[1])]] <- as.numeric(is.na(visit_i_df[[visit_i_Y[1]]]))
+  visit_i_df[[paste0("C_", visit_i_Y[2])]] <- as.numeric(is.na(visit_i_df[[visit_i_Y[2]]]))
+  
+  # Rename INSULN1 to INSULIN and reorder
+  Li <- paste(substr(L0, 1, nchar(L0) - 1), visit, sep="")
+  visit_i_df <- visit_i_df %>%
+    rename(!!paste0("INSULIN", visit) := paste0("INSULN1", visit)) %>%
+    select(all_of(c("SWANID", Li, 
+                    paste0("D_TVCOV", visit),
+                    paste0("D_HORMUSER", visit), paste0("HORMUSER", visit), 
+                    paste0("C_", visit_i_Y[1]), visit_i_Y[1], 
+                    paste0("C_", visit_i_Y[2]), visit_i_Y[2])))
+
+  # Merge
   clean_df <- merge(clean_df, visit_i_df, by="SWANID", all.x=T)
-}
-
-###################################
-
-which(colnames(clean_df) == "HPBMDT0") #everything up to the 17th col is baseline covariates
-
-for (i in 1:17){
-  print(any(is.na(clean_df[,i])))
-} #no one is missing its baseline covariates, so we don't need the delta nodes for that
-
-#dropped the age variables after the baseline 
-clean_df <- clean_df %>% select(-grep("AGE", names(clean_df), value=TRUE)[-1])
-
-##### LVCF!! for the intermediate covariates #####
-
-#fixing some column names
-clean_df <- rename(clean_df, DIABETE0 = DIABETE)
-clean_df <- rename(clean_df, MARITAL0 = MARITALGP)
-names(clean_df) <- sub("INSULN\\d?", "INSULIN", names(clean_df)) #fixed insuln to insulin and gets rid of the extra digit
-
-#making the level names of all the status columns the same (they are the same thing just written differently and that is messing with things)
-status_cols <- grep("STATUS", names(clean_df), value = TRUE)[-1]
-for (col in status_cols){
-  levels(clean_df[[col]]) <- levels(clean_df$STATUS0)
-}
-
-#vector with all the col names for the intermediate covariates
-int_cov <- grep("HORMUSER|SPBMDT|HPBMDT|CSPINE|CHIP", names(clean_df)[-c(1:17)], value = TRUE, invert = TRUE)
-
-#actually doing LVCF
-for (cur_col in int_cov){
-  i <- as.numeric(regmatches(cur_col, regexpr('\\d+', cur_col))) #extracts the number at the end of the column name
-  prev_col <- paste(regmatches(cur_col, regexpr('[[:alpha:]]+', cur_col)), i-1, sep = "") #gets the name of the column from the previous visit
-  ind <- which(is.na(clean_df[cur_col])) #index of which values are NA and need to get replaced
-  clean_df[cur_col][ind,] <- clean_df[prev_col][ind,] #replaces NAs with value from previous visit
-}
-
-any(is.na(clean_df[int_cov])) #yay 
-
-##### adding delta A columns, indicator of whether the exposure was measured ###
-treat_cols <- grep("HORMUSER", names(clean_df), value = TRUE)
-
-delta_cols <- sub("USER", "DELTA", treat_cols)
-for (i in seq_along(treat_cols)) {
+  
+  # Refill D_HORMUSER, C_SPBMDT, C_HPBMDT 
+  censor_cols <- c(paste0("D_TVCOV", visit), paste0("D_HORMUSER", visit), paste0("C_", visit_i_Y[1]), paste0("C_", visit_i_Y[2]))
   clean_df <- clean_df %>%
-    mutate(
-      !!delta_cols[i] := ifelse(is.na(.data[[treat_cols[i]]]), 0, 1)) %>% #makes the delta col
-    relocate(
-      !!sym(delta_cols[i]), .after = !!sym(treat_cols[i])) #moves it right after the corresponding treatment col
+    mutate(across(all_of(censor_cols), ~replace_na(.x, 1)))
+  
+  # LOCF for intermediate covariates (Comment this  whole section out for eda-data.csv)
+  int_cov <- colnames(visit_i_df)[!colnames(visit_i_df) %in% c("SWANID", censor_cols)]
+
+  for (col in int_cov) {
+    subtract <- ifelse(visit == 10, 2, 1)
+    prev_col <- paste0(substr(col, 1, nchar(col) - subtract), visit-1)
+    ind <- which(is.na(clean_df[col]))
+    clean_df[col][ind, ] <- clean_df[prev_col][ind, ]
+  }
 }
 
-##### make baseline diabete into 0/1 
-no_diabetes <- levels(clean_df$DIABETE0)[1]
-clean_df$DIABETE0 <- ifelse(clean_df$DIABETE0 == no_diabetes, 0, 1)
+# eda-data.csv which has all the original nulls
+# write.csv(clean_df, here("data", "eda_data.csv"), row.names=FALSE)
 
-##### LVCF for the outcome. we only want to censor people who are missing the outcome at visit 10. 
-#missing inbetween values will be imputed using LVCF.
+# both_outcome_no_shift.csv does not shift the A's and L's;
+# we know this is not the correct way to structure our data
+# write.csv(clean_df, here("data", "both_outcome_no_shift.csv"), row.names=FALSE)
 
-#first, let's check if there are people who have an outcome at timepoint 10 who are censored sometime before that
-#spine
-cspine_cols <- clean_df %>% select(grep("CSPINE", names(clean_df), value = T))
-cspine_cols %>% filter(CSPINE10 == 1, rowSums(cspine_cols) != 11) #yes, there are many.
-which(cspine_cols$CSPINE10 ==1 & rowSums(cspine_cols) != 11)
-
-#hip
-chip_cols <- clean_df %>% select(grep("CHIP", names(clean_df), value = T))
-chip_cols %>% filter(CHIP10 == 1, rowSums(chip_cols) != 11) #huh there might be less rows than with the spine?
-
-#now we will do LVCF on the SPBMDT (spine outcome) columns 
-spine_cols <- grep("SPBMDT", names(clean_df), value = TRUE)[-1]
-
-for (cur_col in spine_cols){
-  i <- as.numeric(regmatches(cur_col, regexpr('\\d+', cur_col))) #extracts the number at the end of the column name
-  prev_col <- paste(regmatches(cur_col, regexpr('[[:alpha:]]+', cur_col)), i-1, sep = "") #gets the name of the column from the previous visit
-  ind <- which(is.na(clean_df[cur_col]) & !is.na(clean_df$SPBMDT10)) #index of which values are NA and need to get replaced, but only if the outcome at the last timepoint is not missing
-  clean_df[cur_col][ind,] <- clean_df[prev_col][ind,] #replaces NAs with value from previous visit
+# both_outcome_w_shift.csv shifts the A's back one visit;
+# to ensure the time-ordering of the A's and L's is correct
+shift_clean_df <- copy(clean_df)
+shift_cols <- paste0(c("D_HORMUSER", "HORMUSER"), rep(c(0:9), each=2))
+for (col in shift_cols) {
+  current_visit <- as.numeric(substr(col, nchar(col), nchar(col)))
+  next_col <- paste0(substr(col, 1, nchar(col) - 1), current_visit + 1)
+  shift_clean_df[col] <- shift_clean_df[next_col]
 }
 
-#LVCF on the HPBMDT (hip outcome) columns
-hip_cols <- grep("HPBMDT", names(clean_df), value = TRUE)[-1]
+shift_clean_df <- shift_clean_df %>%
+  select(-c(D_HORMUSER0, D_HORMUSER10, HORMUSER10))
 
-for (cur_col in hip_cols){
-  i <- as.numeric(regmatches(cur_col, regexpr('\\d+', cur_col))) #extracts the number at the end of the column name
-  prev_col <- paste(regmatches(cur_col, regexpr('[[:alpha:]]+', cur_col)), i-1, sep = "") #gets the name of the column from the previous visit
-  ind <- which(is.na(clean_df[cur_col]) & !is.na(clean_df$HPBMDT10)) #index of which values are NA and need to get replaced, but only if the outcome at the last timepoint is not missing
-  clean_df[cur_col][ind,] <- clean_df[prev_col][ind,] #replaces NAs with value from previous visit
-}
+# spine outcome (move hip to covariates, adjust D_TVCOV)
+d_tvcov_cols <- colnames(shift_clean_df %>% select(starts_with("D_TVCOV")))
+spine_df <- copy(shift_clean_df)
+spine_df[d_tvcov_cols] <- lapply(1:length(d_tvcov_cols), function(i) {
+  d_tvcov_i <- d_tvcov_cols[i]
+  c_hpbmdt_i <- paste0("C_HPBMDT", i)
+  return(ifelse(shift_clean_df[d_tvcov_i] == 0 & shift_clean_df[c_hpbmdt_i] == 0, 0, 1))
+})
+spine_df <- spine_df %>%
+  select(-all_of(paste0("C_HPBMDT", rep(c(1:10))))) %>%
+  relocate("HPBMDT1", .before="D_TVCOV1") %>%
+  relocate("HPBMDT2", .before="D_TVCOV2") %>%
+  relocate("HPBMDT3", .before="D_TVCOV3") %>%
+  relocate("HPBMDT4", .before="D_TVCOV4") %>%
+  relocate("HPBMDT5", .before="D_TVCOV5") %>%
+  relocate("HPBMDT6", .before="D_TVCOV6") %>%
+  relocate("HPBMDT7", .before="D_TVCOV7") %>%
+  relocate("HPBMDT8", .before="D_TVCOV8") %>%
+  relocate("HPBMDT9", .before="D_TVCOV9") %>%
+  relocate("HPBMDT10", .before="D_TVCOV10")
+  
+write.csv(spine_df, here("data", "spine_final.csv"), row.names=FALSE)
 
-## lvcf for the outcome currently doesn't fill in NAs if visit 10 is NA. probably need to fix this? also need to figure out what we are doing with the C nodes if we've imputed the values
+# hip outcome (move spine to covariates, adjust D_TVCOV)
+hip_df <- copy(shift_clean_df)
+hip_df[d_tvcov_cols] <- lapply(1:length(d_tvcov_cols), function(i) {
+  d_tvcov_i <- d_tvcov_cols[i]
+  c_spbmdt_i <- paste0("C_SPBMDT", i)
+  return(ifelse(shift_clean_df[d_tvcov_i] == 0 & shift_clean_df[c_spbmdt_i] == 0, 0, 1))
+})
+hip_df <- hip_df %>%
+  select(-all_of(paste0("C_SPBMDT", rep(c(1:10))))) %>%
+  relocate("SPBMDT1", .before="D_TVCOV1") %>%
+  relocate("SPBMDT2", .before="D_TVCOV2") %>%
+  relocate("SPBMDT3", .before="D_TVCOV3") %>%
+  relocate("SPBMDT4", .before="D_TVCOV4") %>%
+  relocate("SPBMDT5", .before="D_TVCOV5") %>%
+  relocate("SPBMDT6", .before="D_TVCOV6") %>%
+  relocate("SPBMDT7", .before="D_TVCOV7") %>%
+  relocate("SPBMDT8", .before="D_TVCOV8") %>%
+  relocate("SPBMDT9", .before="D_TVCOV9") %>%
+  relocate("SPBMDT10", .before="D_TVCOV10")
 
+write.csv(hip_df, here("data", "hip_final.csv"), row.names=FALSE)
 
-##### dealing with factor variables: phy_act, marital, degree, race, status through visit 10
-
-#physical activity
-levels(clean_df$PHY_ACT) <- seq(1,5) # 1 is less activity, 5 is most activity
-clean_df$PHY_ACT <- as.integer((clean_df$PHY_ACT))
-
-#degree
-levels(clean_df$DEGREE) <- 1:5
-clean_df$DEGREE <- as.integer((clean_df$DEGREE))
-
-#marital status
-levels(clean_df$MARITAL0) <- seq(0,3)
-clean_df <- clean_df %>% mutate(across(contains("MARITAL"), ~ ifelse(. == 4, 2, .)))
-table(clean_df$MARITAL0)
-
-write.csv(clean_df, here("data", "clean_data.csv"), row.names=F)
-
+# the final_df.csv emily created makes everything after the first appearance of censoring to be NA
+# since ltmle can handle NAs after censoring; 
+# i think either way ltmle will run the same bc data after censoring is not considered
