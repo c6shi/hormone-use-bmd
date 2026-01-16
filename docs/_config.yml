@@ -24,7 +24,7 @@ tagline: The Effect of Hormone Replacement Therapies on Bone Mineral Density in 
 baseurl: "/hormone-use-bmd" # the subpath of your site, e.g. /blog
 url: "https://c6shi.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 author: Candus Shi
-exclude: ["Gemfile", "Gemfile.lock", "LICENSE", "README.md"]
+exclude: ["Gemfile", "Gemfile.lock", "LICENSE", "README.md", "vendor"]
 
 # Build settings
 theme: just-the-docs
