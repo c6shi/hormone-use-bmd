@@ -20,20 +20,27 @@ We use the SWAN data publicly available on ICPSR: https://www.icpsr.umich.edu/we
 - Visit 09: ICPSR 32721
 - Visit 10: ICPSR 32961
 
-Data cleaning is performed in `data-cleaning.R`. The final clean dataset can be found as a csv file at `data/clean_data.csv`. 
+Data cleaning is performed in `data-cleaning.R`. The final clean dataset can be found as two csv files correspoding 
+to the two outcomes of interest: `data/hip_final.csv` and `data/spine_final.csv`. 
 
 # Roadmap:
 ## Step 1. Question of Interest
-What is the mean difference in bone mineral density (BMD) at the spine and hip at Visit 10 for women in the SWAN study if all participants reported having hormonal replacement therapy (HRT) or using hormonal contraceptives at all visits vs if no participants reported having HRT or using hormonal contraceptives at any visits. 
+Original question: What is the mean difference in bone mineral density (BMD) at the spine and hip at Visit 10 
+for women in the SWAN study if all participants reported having hormonal replacement therapy (HRT) or using hormonal 
+contraceptives at all visits vs if no participants reported having HRT or using hormonal contraceptives at any visits? 
+
+This might not be a realistic intervention, and we will need to change the question.
 
 ## Step 2. Observed Data & Statistical Model
-Our observed data has the following structure: $$O = (B_0, A_0, C_0, C_0L_0, TV_1, A_1, C_1, C_1L_1 \dots, TV_{10}, A_{10}, C_{10}, C_{10}L_{10} = Y)$$
+Our observed data has the following structure: $$O = (W, A_1, L_1, C_1, Y_1, \dots, A_{10}, L_{10}, C_{10}, Y_{10})$$
 where 
-- $B_0$ are baseline covariates
-- $TV_t$ are time-varying covariates at time $t$
-- $A_t$ is exposure at time $t$
-- $C_t$ is censoring at time $t$
-- $C_tL_t$ is observed BMD at time $t$
+- $W$ are baseline covariates
+- $A_t$ indicates HRT user vs. non-user at each visit $t$
+- $L_t$ are time-varying covariates measured at each visit $t$
+- $C_t$ denotes right-censoring at visit $t$
+- $Y_t$ is observed BMD at visit $t$
+  - When running analysis on spine BMD, $Y_t$ is observed spine BMD and 
+  hip BMD is included in $L_t$, and vice versa for analysis on hip BMD. 
 
 ## Step 3. DAG & SEM
 
@@ -44,8 +51,23 @@ where
 ## Step 6. Estimation
 
 # References:
-Alebna, P. L., Armendano, J. I., and Maleki, N. (2025). A longitudinal analysis on the effect of hormone use on allostatic load in perimenopausal women. Aging and Health Research, 5(1):100213.
+Alebna, P. L., Armendano, J. I., and Maleki, N. (2025). 
+A longitudinal analysis on the effect of hormone use on allostatic load in perimenopausal women. 
+Aging and Health Research, 5(1):100213. https://doi.org/10.1016/j.ahr.2024.100213. 
 
-Solomon, D. H., Ruppert, K., Cauley, J. A., Lian, Y., Altwies, H., Shieh, A., and Burnett-Bowie, S.-A. M. (2024). The effect of starting metformin on bone mineral density among women with type 2 diabetes in the Study of Women’s Health Across the Nation (SWAN). Osteoporosis International, 35(1):189–194.
+Gruber, S., Philips, R. V., Lee, H., and van der Laan, M. J. (2022).
+Data-adaptive selection of the propensity score truncation level for inverse-probability-weighted and targeted maximum likelihood estimators of marginal point treatment effects.
+American Journal of Epidemiology, 191(9):1640-1651. https://doi.org/10.1093/aje/kwac087. 
 
-Sowers, M., Crawford, S., Sternfeld, B., Morganstein, D., Gold, E., Greendale, G., Evans, D., Neer, R., Matthews, K., Sherman, S., Lo, A., Weiss, G., and Kelsey, J. (2000). SWAN: A Multicenter, Multiethnic, Community-Based Cohort Study of Women and the Menopausal Transition. In Lobo, R., Kelsey, J., and Marcus, R., editors, Menopause: Biology and Pathobiology, pages 175–188. San Diego: Academic Press.
+Philips, R. V., van der Laan, M. J., Lee, H., and Gruber, S. (2023).
+Practical considerations for specifying a super learner. 
+International Journal of Epidemiology, 52(4):1276-1285. https://doi.org/10.1093/ije/dyad023. 
+
+Solomon, D. H., Ruppert, K., Cauley, J. A., Lian, Y., Altwies, H., Shieh, A., and Burnett-Bowie, S.-A. M. (2024). 
+The effect of starting metformin on bone mineral density among women with type 2 diabetes in the Study of Women’s Health Across the Nation (SWAN). 
+Osteoporosis International, 35(1):189–194. https://doi.org/10.1007/s00198-023-06915-3. 
+
+Sowers, M., Crawford, S., Sternfeld, B., Morganstein, D., Gold, E., Greendale, G., Evans, D., Neer, R., Matthews, K., Sherman, S., Lo, A., Weiss, G., and Kelsey, J. (2000). 
+SWAN: A Multicenter, Multiethnic, Community-Based Cohort Study of Women and the Menopausal Transition. 
+In Lobo, R., Kelsey, J., and Marcus, R., editors, Menopause: Biology and Pathobiology, pages 175–188. 
+San Diego: Academic Press. https://www.researchgate.net/publication/43196481_SWAN_A_Multicenter_Multiethnic_Community-Based_Cohort_Study_of_Women_and_the_Menopausal_Transition. 
