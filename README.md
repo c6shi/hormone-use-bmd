@@ -20,7 +20,7 @@ We use the SWAN data publicly available on ICPSR: https://www.icpsr.umich.edu/we
 - Visit 09: ICPSR 32721
 - Visit 10: ICPSR 32961
 
-Data cleaning is performed in `data-cleaning.R`. The final clean dataset can be found as two csv files correspoding 
+Data cleaning is performed in `data-cleaning.R`. The final clean dataset can be found as two csv files corresponding 
 to the two outcomes of interest: `data/hip_final.csv` and `data/spine_final.csv`. 
 
 # Roadmap:

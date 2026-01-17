@@ -50,7 +50,7 @@ baselinefit$fit$Q[[2]]
 
 #influence curve looks ok i think!
 
-<<<<<<< HEAD
+
 #########################################
 
 #final results:
@@ -80,13 +80,6 @@ ggplot(results, aes(x = Model, y = ate, color = Model)) +
     title = "ATE of Hormone Use on Spine Bone Marrow Density"
   )
 
-
-
-
-
-
-
-=======
 fit2 <- ltmle(data = final_df,
               Anodes = Anodes,
               Cnodes = Cnodes,
@@ -122,5 +115,4 @@ fit3 <- ltmle(data = final_df,
                 c("SL.glm.interaction", "screen.corP"),
                 c("SL.earth", "screen.corP"),
                 c("SL.ranger", "screen.corP")))
-              
->>>>>>> f7a96d413cb15f6b954d41c0069a2e2492c166ac
+

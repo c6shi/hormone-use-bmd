@@ -1,4 +1,4 @@
-# ETL
+# Data Cleaning
 library(here)
 library(dplyr)
 library(tidyverse)
@@ -309,6 +309,7 @@ spine_df[d_tvcov_cols] <- lapply(1:length(d_tvcov_cols), function(i) {
 })
 spine_df <- spine_df %>%
   select(-all_of(paste0("C_HPBMDT", rep(c(1:10))))) %>%
+  relocate("HPBMDT0", .before="HORMUSER0") %>%
   relocate("HPBMDT1", .before="D_TVCOV1") %>%
   relocate("HPBMDT2", .before="D_TVCOV2") %>%
   relocate("HPBMDT3", .before="D_TVCOV3") %>%
@@ -331,6 +332,7 @@ hip_df[d_tvcov_cols] <- lapply(1:length(d_tvcov_cols), function(i) {
 })
 hip_df <- hip_df %>%
   select(-all_of(paste0("C_SPBMDT", rep(c(1:10))))) %>%
+  relocate("SPBMDT0", .before="HORMUSER0") %>%
   relocate("SPBMDT1", .before="D_TVCOV1") %>%
   relocate("SPBMDT2", .before="D_TVCOV2") %>%
   relocate("SPBMDT3", .before="D_TVCOV3") %>%
