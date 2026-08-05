@@ -36,6 +36,9 @@ run into positivity violations.
 Let's take a look at the distribution of exposure and see how many individuals 
 we have at each visit and for how long they are on the treatment. 
 
+##### Figure 1: Number of women in each treatment group at each visit
+![Figure 1](/assets/no_of_women_per_group_per_visit.png)
+
 ##### Table 1: Number of women in each treatment group at each visit
 
 | On HRTs Since Last Visit |  0 (Baseline) | Visit 1 | Visit 2 | Visit 3 | Visit 4 | Visit 5 | Visit 6 | Visit 7 | Visit 8 | Visit 9 | Visit 10 |

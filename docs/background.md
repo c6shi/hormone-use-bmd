@@ -142,5 +142,5 @@ Clinicians need more training and education on menopause.
 	- Since WHI was not a single-outcome trial, adjustment was conducted for breast cancer which was a priori specified as a monitoring and secondary outcome, multiple statistical testing, sequential monitoring, and confounding bias. Each showed non-significant effect of CEE+MPA on breast cancer. 
 	- Cochrane RCT meta-analysis: HT reduces coronary heart disease & all-cause mortality in women starting HT when less than 60 years old or 10 years since menopause. 
 
-## WHI Response to FDA Expert Panel (September 19, 2025)
-See: https://www.whi.org/doc/banner/WHI_response_to_FDA_Expert_Panel_on_MHT_use_09.19.2025.pdf. 
+## Some Notes From the [WHI Response to FDA Expert Panel (September 19, 2025)](https://www.whi.org/doc/banner/WHI_response_to_FDA_Expert_Panel_on_MHT_use_09.19.2025.pdf)
+xxx
