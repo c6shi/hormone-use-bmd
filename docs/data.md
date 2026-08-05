@@ -35,7 +35,7 @@ data), though the study is still ongoing today.
 There were many variables collected in the SWAN dataset. Since we are interested
 in HRTs and BMD, we handpicked a few variables to be included in our analysis, as 
 including too many covariates in L-TMLE will be too computationally intensive 
-given our available resources. 
+given our available resources. Indeed, adjusting for covariates is known to be influential in increasing efficiency of the estimator (cite stuff here). 
 
 ## Variables
 Certain baseline and time-varying covariates were chosen based on what is known 
@@ -65,16 +65,13 @@ $$
 
 Note that we switch the order of the $$A$$'s and the $$L$$'s because all of the 
 treatment, covariate, and outcome data are collected at the "same time" at each visit.
-Additionally, some variables are questions about xyz since the last visit or 
-within the past few weeks, e.g. anxiety, depression, insulin, smoking, etc., 
+Additionally, some variables are questions about having done a particular thing since the last visit or within the past few weeks, e.g. anxiety, depression, insulin, smoking, etc., 
 whereas some other variables are values collected exactly at the visit, 
 e.g. height, weight, BMD. So, we have some ambiguity in the time-ordering. 
 
 ## Data Cleaning
 Recall that SWAN collected data from seven cities. However, two of the seven 
-cities did not measure BMD: Chicago and Newark. Since site information is not publicly
-available, we clean based on missingness and end up with a dataset of 1,804 women. 
-All data cleaning steps can be found in `data-cleaning.R` in the git repo.
+cities did not measure BMD: Chicago and Newark. Additionally, site information is not publicly available, so we clean based on missingness and end up with a dataset of 1,804 women. All data cleaning steps can be found in `data-cleaning.R` in the git repo.
 
 ### Missingness
 We distinguish between missing data and right-censoring. 

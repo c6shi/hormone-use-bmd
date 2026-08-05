@@ -1,4 +1,4 @@
-# Finding the Effect of HRTs on BMD in Menopausal Women Using L-TMLE
+# Finding the Effect of MHTs on BMD in Menopausal Women Using L-TMLE
 PBHLTH 243A Fall 2025 Research Project (Ongoing)
 
 We further explore different types of interventions which results in different statistical questions.
@@ -26,16 +26,16 @@ to the two outcomes of interest: `data/hip_final.csv` and `data/spine_final.csv`
 # Roadmap:
 ## Step 1. Question of Interest
 Original question: What is the mean difference in bone mineral density (BMD) at the spine and hip at Visit 10 
-for women in the SWAN study if all participants reported having hormonal replacement therapy (HRT) or using hormonal 
-contraceptives at all visits vs if no participants reported having HRT or using hormonal contraceptives at any visits? 
+for women in the SWAN study if all participants reported having menopausal hormone therapy (MHT) or using hormonal 
+contraceptives at all visits vs if no participants reported having MHT or using hormonal contraceptives at any visits? 
 
-This might not be a realistic intervention, and we will need to change the question.
+This might not be a realistic intervention/have serious positivity violations, and we will need to change the question.
 
 ## Step 2. Observed Data & Statistical Model
 Our observed data has the following structure: $$O = (W, A_1, L_1, C_1, Y_1, \dots, A_{10}, L_{10}, C_{10}, Y_{10})$$
 where 
 - $W$ are baseline covariates
-- $A_t$ indicates HRT user vs. non-user at each visit $t$
+- $A_t$ indicates MHT user vs. non-user at each visit $t$
 - $L_t$ are time-varying covariates measured at each visit $t$
 - $C_t$ denotes right-censoring at visit $t$
 - $Y_t$ is observed BMD at visit $t$

@@ -60,3 +60,6 @@ docs/.idea
 
 # Gemfile.lock
 docs/Gemfile.lock
+
+# Obsidian
+.obsidian/

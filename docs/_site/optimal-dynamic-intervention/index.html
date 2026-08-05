@@ -15,7 +15,7 @@
   
 
     
-    .site-nav > ul.nav-list:first-child > li:not(:nth-child(4)) > a,
+    .site-nav > ul.nav-list:first-child > li:not(:nth-child(6)) > a,
     .site-nav > ul.nav-list:first-child > li > ul > li a {
       background-image: none;
     }
@@ -25,12 +25,12 @@
       background-image: none;
     }
 
-    .site-nav > ul.nav-list:first-child > li:nth-child(4) > a {
+    .site-nav > ul.nav-list:first-child > li:nth-child(6) > a {
       font-weight: 600;
       text-decoration: none;
-    }.site-nav > ul.nav-list:first-child > li:nth-child(4) > button svg {
+    }.site-nav > ul.nav-list:first-child > li:nth-child(6) > button svg {
       transform: rotate(-90deg);
-    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(4) > ul.nav-list {
+    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(6) > ul.nav-list {
       display: block;
     }
   </style>
@@ -50,21 +50,21 @@
 
 
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Method: L-TMLE | HRTs &amp; BMD</title>
+<title>Attempt 2: Optimal Dynamic Intervention | HRTs &amp; BMD</title>
 <meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="Method: L-TMLE" />
+<meta property="og:title" content="Attempt 2: Optimal Dynamic Intervention" />
 <meta name="author" content="Candus Shi" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="An Application of L-TMLE" />
 <meta property="og:description" content="An Application of L-TMLE" />
-<link rel="canonical" href="http://localhost:4000/hormone-use-bmd/method/" />
-<meta property="og:url" content="http://localhost:4000/hormone-use-bmd/method/" />
+<link rel="canonical" href="http://localhost:4000/hormone-use-bmd/optimal-dynamic-intervention/" />
+<meta property="og:url" content="http://localhost:4000/hormone-use-bmd/optimal-dynamic-intervention/" />
 <meta property="og:site_name" content="HRTs &amp; BMD" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Method: L-TMLE" />
+<meta property="twitter:title" content="Attempt 2: Optimal Dynamic Intervention" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"Candus Shi"},"description":"An Application of L-TMLE","headline":"Method: L-TMLE","url":"http://localhost:4000/hormone-use-bmd/method/"}</script>
+{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"Candus Shi"},"description":"An Application of L-TMLE","headline":"Attempt 2: Optimal Dynamic Intervention","url":"http://localhost:4000/hormone-use-bmd/optimal-dynamic-intervention/"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -208,22 +208,35 @@
       <div id="main-content" class="main-content">
         <main>
           
-            <h1 id="method-l-tmle">
+            <h1 id="attempt-2-optimal-dynamic-intervention">
   
   
-    <a href="#method-l-tmle" class="anchor-heading" aria-labelledby="method-l-tmle"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Method: L-TMLE
+    <a href="#attempt-2-optimal-dynamic-intervention" class="anchor-heading" aria-labelledby="attempt-2-optimal-dynamic-intervention"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Attempt 2: Optimal Dynamic Intervention
   
   
 </h1>
     
 
-<p>To understand longitudinal TMLE (L-TMLE), we first need to understand regular TMLE.</p>
+<p>Static interventions in longitudinal settings might face a lot of positivity violations
+(as we saw previously) and may also be simply unethical/not possible. Instead, we can 
+consider dynamic interventions which are treatment decision rules that 
+depend on covariates of each individual, denoted \(d: W \to d(W)\). These are more flexible than 
+static interventions and can also account for effect heterogeneity, which is often present. 
+Moreover, we can find the optimal dynamic treatment rule (ODTR), denoted \(d_0: W \to d_0(W)\) 
+where \(d_0 = \arg\min_d E_0 Y_d\) if \(Y\) is some sort of negative outcome.</p>
 
-<p>TMLE</p>
+<p>In our problem, we might assume that BMD tends to decrease as women age (along with the drop in hormones). 
+So, we want to administer HRTs to women with menopausal symptoms and low BMD, assuming there is a positive 
+causal effect of HRTs on BMD. Also, each woman in the SWAN study may be working with their 
+doctor to also establish their optimal HRT usage given their history.</p>
 
-<p>L-TMLE: ICE</p>
+<p>After thinking about this for a while, this doesn’t really make sense (to me) to do. There are a multitude of things that can impact BMD, and BMD itself can be a marker for other diseases, so finding an ODTR that maximizes BMD doesn’t really make sense, if the main purpose of an HRT is to reduce menopausal symptoms (e.g. I don’t think a doctor would prescribe HRTs to women purely for the sake of increasing BMD). However, we still want to address the positivity issues of a static intervention; we next consider longitudinal modified treatment policies (LMTPs).</p>
 
-<p>Why L-TMLE is better compared to other longitudinal analysis methods</p>
+<p>References:</p>
+
+<p>Williams, N. T., Hoffman, K. L., Díaz I., and Rudolph K. E. (2024). 
+Learning optimal dyamic treatment regimes from longitudinal data.
+American Journal of Epidemiology, 193(12):1768-1775. https://doi.org/10.1093/aje/kwae122.</p>
 
           
 

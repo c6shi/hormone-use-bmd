@@ -18,9 +18,9 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: HRTs & BMD
+title: MHTs & BMD
 description: An Application of L-TMLE
-tagline: The Effect of Hormone Replacement Therapies on Bone Mineral Density in Menopausal Women
+tagline: The Effect of Menopausal Hormone Therapies on Bone Mineral Density in Menopausal Women
 baseurl: "/hormone-use-bmd" # the subpath of your site, e.g. /blog
 url: "https://c6shi.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 author: Candus Shi

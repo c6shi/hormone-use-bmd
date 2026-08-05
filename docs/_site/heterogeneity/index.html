@@ -15,7 +15,7 @@
   
 
     
-    .site-nav > ul.nav-list:first-child > li:not(:nth-child(4)) > a,
+    .site-nav > ul.nav-list:first-child > li:not(:nth-child(8)) > a,
     .site-nav > ul.nav-list:first-child > li > ul > li a {
       background-image: none;
     }
@@ -25,12 +25,12 @@
       background-image: none;
     }
 
-    .site-nav > ul.nav-list:first-child > li:nth-child(4) > a {
+    .site-nav > ul.nav-list:first-child > li:nth-child(8) > a {
       font-weight: 600;
       text-decoration: none;
-    }.site-nav > ul.nav-list:first-child > li:nth-child(4) > button svg {
+    }.site-nav > ul.nav-list:first-child > li:nth-child(8) > button svg {
       transform: rotate(-90deg);
-    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(4) > ul.nav-list {
+    }.site-nav > ul.nav-list:first-child > li.nav-list-item:nth-child(8) > ul.nav-list {
       display: block;
     }
   </style>
@@ -50,21 +50,21 @@
 
 
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Method: L-TMLE | HRTs &amp; BMD</title>
+<title>Attempt 4: Effect Heterogeneity | HRTs &amp; BMD</title>
 <meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="Method: L-TMLE" />
+<meta property="og:title" content="Attempt 4: Effect Heterogeneity" />
 <meta name="author" content="Candus Shi" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="An Application of L-TMLE" />
 <meta property="og:description" content="An Application of L-TMLE" />
-<link rel="canonical" href="http://localhost:4000/hormone-use-bmd/method/" />
-<meta property="og:url" content="http://localhost:4000/hormone-use-bmd/method/" />
+<link rel="canonical" href="http://localhost:4000/hormone-use-bmd/heterogeneity/" />
+<meta property="og:url" content="http://localhost:4000/hormone-use-bmd/heterogeneity/" />
 <meta property="og:site_name" content="HRTs &amp; BMD" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Method: L-TMLE" />
+<meta property="twitter:title" content="Attempt 4: Effect Heterogeneity" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"Candus Shi"},"description":"An Application of L-TMLE","headline":"Method: L-TMLE","url":"http://localhost:4000/hormone-use-bmd/method/"}</script>
+{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"Candus Shi"},"description":"An Application of L-TMLE","headline":"Attempt 4: Effect Heterogeneity","url":"http://localhost:4000/hormone-use-bmd/heterogeneity/"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -208,22 +208,20 @@
       <div id="main-content" class="main-content">
         <main>
           
-            <h1 id="method-l-tmle">
+            <h1 id="attempt-4-effect-heterogeneity">
   
   
-    <a href="#method-l-tmle" class="anchor-heading" aria-labelledby="method-l-tmle"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Method: L-TMLE
+    <a href="#attempt-4-effect-heterogeneity" class="anchor-heading" aria-labelledby="attempt-4-effect-heterogeneity"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Attempt 4: Effect Heterogeneity
   
   
 </h1>
     
 
-<p>To understand longitudinal TMLE (L-TMLE), we first need to understand regular TMLE.</p>
+<p>After doing some more research on the literature regarding menopause and HRTs, I found that the type of HRT and age group are very important variables to stratify on. For example, transdermal therapy (through the skin e.g. via patches) is likely to be much less hazardous than oral therapy. Additionally, the WHI study had over-enrolled older women (average age: 63), which meant the increase in risk of cardiovascular disease was not due to prescription of HRTs but due to other complications that coincide with aging. Therefore, I redo the analysis for each of the HRT questions in the SWAN questionnaire separately, and I conduct an effect modification/heterogeneity analysis on age. Furthermore, hip fractures are more common and of a concern, so I focus on hip BMD.</p>
 
-<p>TMLE</p>
+<p>Investigating the timing hypothesis is also of interest.</p>
 
-<p>L-TMLE: ICE</p>
-
-<p>Why L-TMLE is better compared to other longitudinal analysis methods</p>
+<p>References:</p>
 
           
 

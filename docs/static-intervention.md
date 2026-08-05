@@ -4,6 +4,7 @@ nav_order: 5
 ---
 
 # Attempt 1: Static Intervention
+
 The first thing we tried was investigating the causal effect under a static intervention
 for all time points. 
 
@@ -83,3 +84,17 @@ the difference with the 797 number from above is after filtering all women with 
 Again, these might not be accurate since there were women with null visits. 
 
 ## Results
+
+We used L-TMLE to estimate the target parameter. For our super learner library,
+we specified a small library to reduce computation time: 
+`SL.library = list("SL.glm", "SL.earth", c("SL.glm", "screen.corP"), c("SL.earth", "screen.corP"))`. 
+For the spine BMD, this gave us a parameter estimate of 0.065513 with SE 0.010989, yielding a 95% CI (0.043975, 0.087051) and p-value 2.4962e-09.
+For the hip BMD, this gave us a parameter estimate of 0.025075 with SE 0.0088218, yielding a 95% CI (0.0077841, 0.042365) and p-value 0.0044784. 
+Unfortunately, the units for BMD were not specified, but we can interpret the spine BMD results as 
+"the spine BMD of women who were on HRTs for 10 years was 0.065513 units greater than
+the spine BMD of women who were never on HRTs for 10 years", and similarly for the hip BMD outcome. 
+We see that HRTs have a positive effect on BMD in the spine and hip, as established in 
+literature (again, see [Background]({{ site.baseurl }}{% link background.md %})). 
+
+### Sensitivity Analysis
+causal gap

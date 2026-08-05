@@ -12,7 +12,7 @@ hip_df <- read.csv(here("data", "hip_final.csv"), header=TRUE)
 dfs <- list("spine" = spine_df, "hip" = hip_df)
 
 # Data with outcome of interest (change to spine or hip)
-outcome_of_interest <- "hip"
+outcome_of_interest <- "spine"
 dfoi <- dfs[[outcome_of_interest]]
 censor_prefix_reg <- ifelse(outcome_of_interest == "spine", "^C_SPBMDT", "^C_HPBMDT")
 outcome_prefix_reg <- ifelse(outcome_of_interest == "spine", "^SPBMDT", "^HPBMDT")
@@ -59,6 +59,14 @@ end_time <- Sys.time()
 print(end_time - start_time)
 # 3.86856 mins
 summary(fit1)
+# for spine BMD:
+# Additive Treatment Effect:
+# Parameter Estimate:  0.065513 
+# Estimated Std Err:  0.010989 
+# p-value:  2.4962e-09 
+# 95% Conf Interval: (0.043975, 0.087051) 
+
+# for hip BMD:
 # Additive Treatment Effect:
 # Parameter Estimate:  0.025075
 # Estimated Std Err:  0.0088218
