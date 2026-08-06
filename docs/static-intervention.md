@@ -27,11 +27,10 @@ where
   they never took HRT and were uncensored at all time points
 
 This is not really a realistic intervention and faces a lot of positivity issues. 
-In particular, 797 women were never on HRTs for 10 years (this corresponds to the 
-counterfactual outcome $$Y^{\bar a=0, \bar c=0}$$), and only 12 women were continuously 
-on HRTs for 10 years (this corresponds to the counterfactual outcome $$Y^{\bar a=1, \bar c=0}$$).
+In particular, 797 women were never on HRTs for 10 years (this corresponds to the intervention for the counterfactual outcome $$Y^{\bar a=0, \bar c=0}$$), and only 12 women were continuously 
+on HRTs for 10 years (this corresponds to the intervention for the counterfactual outcome $$Y^{\bar a=1, \bar c=0}$$).
 Furthermore, with the number of covariates we have, the latter group will surely 
-run into positivity violations. 
+run into practical positivity violations. 
 
 Let's take a look at the distribution of exposure and see how many individuals 
 we have at each visit and for how long they are on the treatment. 
@@ -106,6 +105,19 @@ Unfortunately, the units for BMD were not specified, but we can interpret the sp
 the spine BMD of women who were never on HRTs for 10 years", and similarly for the hip BMD outcome. 
 We see that HRTs have a positive effect on BMD in the spine and hip, as established in 
 literature (again, see [Background]({{ site.baseurl }}{% link background.md %})). 
+
+| Outcome | Estimate (95% CI) | p-value |
+| :--- | ---: | ---: |
+| Spine BMD | 0.065513 (0.043975, 0.087051) | 2.4962e-09 |
+| Hip BMD | 0.025075 (0.0077841, 0.042365) | 0.0044784 |
+
+### Examine positivity via distribution of ICs
+
+##### Figure 4: Histogram of ICs for Spine BMD
+![Figure 4](https://github.com/c6shi/hormone-use-bmd/blob/v2/plots/hist_ic_spine_static.png?raw=true)
+
+##### Figure 5: Histogram of ICs for Hip BMD
+![Figure 5](https://github.com/c6shi/hormone-use-bmd/blob/v2/plots/hist_ic_hip_static.png?raw=true)
 
 ### Sensitivity Analysis
 causal gap

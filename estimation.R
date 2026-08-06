@@ -5,6 +5,8 @@ library(tidyverse)
 library(data.table)
 library(ltmle)
 library(SuperLearner)
+library(ggplot2)
+library(stringr)
 
 # Read data
 spine_df <- read.csv(here("data", "spine_final.csv"), header=TRUE)
@@ -12,7 +14,7 @@ hip_df <- read.csv(here("data", "hip_final.csv"), header=TRUE)
 dfs <- list("spine" = spine_df, "hip" = hip_df)
 
 # Data with outcome of interest (change to spine or hip)
-outcome_of_interest <- "spine"
+outcome_of_interest <- "hip"
 dfoi <- dfs[[outcome_of_interest]]
 censor_prefix_reg <- ifelse(outcome_of_interest == "spine", "^C_SPBMDT", "^C_HPBMDT")
 outcome_prefix_reg <- ifelse(outcome_of_interest == "spine", "^SPBMDT", "^HPBMDT")
@@ -74,4 +76,10 @@ summary(fit1)
 # 95% Conf Interval: (0.0077841, 0.042365)
 
 # check influence curve
-hist(fit1$IC[,1])
+fit1_IC_df <- data.frame(IC = fit1$IC[,1])
+ggplot(fit1_IC_df, aes(x = IC)) + 
+  geom_histogram(aes(y=after_stat(density)), color = "black", fill = "#3b5b8a") + 
+  labs(title = sprintf("Histogram of ICs for %s BMD Estimate Under Static Intervention", str_to_title(outcome_of_interest)),
+       y = "Density") + 
+  theme_minimal()
+

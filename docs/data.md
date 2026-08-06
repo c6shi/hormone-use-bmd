@@ -19,8 +19,7 @@ to compare against white women:
 - Hispanic women in Newark, NJ
 - Japanese women in Los Angeles, CA
 
-After a screening process from a cross-sectional study, xxx women were identified 
-to be eligible for the longitudinal study which involved annual examinations of 
+After a screening process from a cross-sectional study, 3,302 women were identified to be eligible for the longitudinal study which involved annual examinations of 
 questionnaires, blood and urine specimen collection, and physical measures. Furthermore,
 annual examinations were scheduled for days 2-5 after bleeding started to standardize 
 serum hormone measure to the early phase of the menstrual cycle. It should also 
@@ -47,7 +46,7 @@ and missingness at the visit.
 - **Exposure**: use of HRTs since last visit, indicator variable denoted $$A(t)$$.
   - Combination estrogen/progestin, e.g. Premphase or Prempro, OR
   - Estrogen pills, e.g. Premarin, Estrace, or Ogen, OR
-  - Estrogen by injection or path, e.g. Estraderm, OR
+  - Estrogen by injection or patch, e.g. Estraderm, OR
   - Progestin pills, e.g. Provera
 - **Outcome**: BMD at the lumbar spine (LS) and total hip (TH), denoted $$Y(t)$$.
   - For these two outcomes, we run the analysis separately for both, and include 
@@ -78,3 +77,35 @@ We distinguish between missing data and right-censoring.
 
 For the missingness variable, should we distinguish between missing anything vs 
 missing exposure? Because missing exposure seems more important than missing a covariate.
+
+### Relevant Data Dictionary
+The data dictionary provided by ICPSR is quite large. Here are the metadata for the relevant variables used in our analysis.
+
+##### STATUS: Menopausal status
+
+| Value | Label |
+| :---: | :--- |
+| 0 | Postmenopausal by BSO | 
+| 1 | Natural postmenopause (no bleeding in 12 months not due to hysterectomy) |
+| 2 | Late perimenopause (no bleeding in 3-11 months) |
+| 3 | Early perimenopause (change in length of bleed or interbleed interval) |
+| 4 | Pre-menopausal (no change in bleeding patterns) |
+| 5 | Pregnant/breastfeeding |
+| 6 | Unknown due to HT use |
+| 7 | Unknown due to hysterectomy |
+
+Bilateral salpingo-oophorectomy (BSO): remove both ovaries & fallopian tubes
+
+Hysterectomy: remove uterus & cervix
+
+##### COMBIN1: Comb estrogen/progestin #1
+Since your last study visit have you taken combination estrogen/progestin (such as Premphase or Prempro)? No (0), Yes (1)
+
+##### ESTROG1: Estrogen pills #1
+Since your last study visit have you taken estrogen pills (such as Premarin, Estrace, Ogen, etc.)? No (0), Yes (1)
+
+##### ESTRNJ1: Estrogen injection/patch #1
+Since your last study visit have you taken estrogen by injection or patch (such as Estraderm)? No (0), Yes (1)
+
+##### PROGES1: Progestin pills #1
+Since your last study visit have you taken progestin pills (such as Provera)? No (0), Yes (1)
