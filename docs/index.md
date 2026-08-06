@@ -6,7 +6,7 @@ permalink: /
 ---
 # {{ site.tagline }}
 
-Last Updated: January 2026
+Last Updated: August 2026
 
 This is a project that EH and I worked on for PBHLTH 243A: Targeted Learning
 during the Fall 2025 semester at UC Berkeley. After presenting it to our class, 

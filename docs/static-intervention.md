@@ -37,7 +37,7 @@ Let's take a look at the distribution of exposure and see how many individuals
 we have at each visit and for how long they are on the treatment. 
 
 ##### Figure 1: Number of women in each treatment group at each visit
-![Figure 1](/assets/no_of_women_per_group_per_visit.png)
+![Figure 1](https://github.com/c6shi/hormone-use-bmd/blob/v2/plots/no_of_women_per_group_per_visit.png?raw=true)
 
 ##### Table 1: Number of women in each treatment group at each visit
 
@@ -58,12 +58,16 @@ We also had the least nulls in visit 1 with 0 nulls and the most nulls in visit 
 with 280 nulls (15.5% of starting sample).
 <br><br>
 
+##### Figure 2: Number of women that started MHTs at each visit
+![Figure 2](https://github.com/c6shi/hormone-use-bmd/blob/v2/plots/no_of_women_start_MHT_per_visit.png?raw=true)
+
+<!--
 ##### Table 2: Number of women that started HRTs at each visit
 
 | 0 (Baseline) | Visit 1 | Visit 2 | Visit 3 | Visit 4 | Visit 5 | Visit 6 | Visit 7 | Visit 8 | Visit 9 | Visit 10 |
 |-------------:|--------:|--------:|--------:|--------:|--------:|--------:|--------:|--------:|--------:|---------:|
 |            0 |     122 |     116 |     108 |      86 |      74 |      51 |      22 |      26 |      11 |       17 |
-
+-->
 Interpretation: 122 women started HRTs at visit 1, 116 women started HRTs at visit 2, etc.
 Note that this does not say anything about the duration, e.g. women may have started HRTs
 at visit 1, then never used HRTs ever again. Also, 17 women began using HRTs at visit 10. 
@@ -75,12 +79,16 @@ null) or less than 17 women (if there were women who truly started HRTs before v
 before visit 10 were null).
 <br><br>
 
+##### Figure 3: Number of women on MHTs for each visit length
+![Figure 3](https://github.com/c6shi/hormone-use-bmd/blob/v2/plots/no_of_women_stay_on_MHT_per_visit_length.png?raw=true)
+
+<!--
 ##### Table 3: Number of women on HRTs for each visit length
 
 | 0 (No HRTs) | 1 Visit | 2 Visits | 3 Visits | 4 Visits | 5 Visits | 6 Visits | 7 Visits | 8 Visits | 9 Visits | 10 Visits |
 |------------:|--------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|---------:|----------:|
 |        1167 |     174 |      112 |       85 |       69 |       58 |       55 |       24 |       26 |       17 |        12 |
-
+-->
 Interpretation: 1,167 women were never on HRTs (including visits with nulls; note
 the difference with the 797 number from above is after filtering all women with any nulls). 
 174 women were on HRTs for exactly one visit, 112 women were on HRTs for exactly two visits, etc. 
