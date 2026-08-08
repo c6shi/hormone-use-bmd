@@ -121,3 +121,5 @@ literature (again, see [Background]({{ site.baseurl }}{% link background.md %}))
 
 ### Sensitivity Analysis
 causal gap
+
+other methods: longitudinal g-comp? IPW?

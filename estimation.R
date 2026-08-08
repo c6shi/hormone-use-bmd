@@ -83,3 +83,5 @@ ggplot(fit1_IC_df, aes(x = IC)) +
        y = "Density") + 
   theme_minimal()
 
+##### Attempt 3: LMTP #####
+# LMTP 1: stay on MHTs one visit longer after first use of MHT
