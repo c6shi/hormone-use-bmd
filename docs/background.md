@@ -83,7 +83,7 @@ Clinicians need more training and education on menopause.
 - Preservation of function: MHTs are not primarily used to treat cardiovascular disease, Alzheimer's disease, osteoporosis, etc. but MHTs can prevent them, so study these
 
 ### Dr. JoAnn Manson
-- See papers that show benefits of HT in women aged 50-59 in the WHI HT trials: [Manson JE and Kaunitz AM (2016)](https://www.nejm.org/doi/full/10.1056/NEJMp1514242), Manson JE, et al. (2013) [https://jamanetwork.com/journals/jama/fullarticle/1745676]. 
+- See papers that show benefits of HT in women aged 50-59 in the WHI HT trials: [Manson JE and Kaunitz AM (2016)](https://www.nejm.org/doi/full/10.1056/NEJMp1514242), [Manson JE, et al. (2013)](https://jamanetwork.com/journals/jama/fullarticle/1745676). 
 
 ### Dr. JoAnn Pinkerton 
 - Boxed warning on *vaginal estrogen dosed to treat GSM* is harming women; it reflects estrogen class labeling extrapolated from *systemic* HT in women (average age 63) and overstates risk.

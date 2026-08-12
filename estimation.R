@@ -7,6 +7,7 @@ library(ltmle)
 library(SuperLearner)
 library(ggplot2)
 library(stringr)
+library(lmtp)
 
 # Read data
 spine_df <- read.csv(here("data", "spine_final.csv"), header=TRUE)
@@ -85,3 +86,46 @@ ggplot(fit1_IC_df, aes(x = IC)) +
 
 ##### Attempt 3: LMTP #####
 # LMTP 1: stay on MHTs one visit longer after first use of MHT
+d1 <- function(data, a) {
+  rep(1, nrow(data))
+}
+
+d0 <- function(data, a) {
+  rep(0, nrow(data))
+}
+
+Lnodes_list <- list()
+for (i in 1:10) {
+  start_index <- ((14 * (i-1)) + 1)
+  stop_index <- 14*i
+  Lnodes_list[[i]] <- Lnodes[start_index:stop_index]
+}
+Lnodes_list[[10]] <- Lnodes_list[[10]][1:13]
+
+fit_lmtp_d1 <- lmtp_tmle(
+  data = dfoi, 
+  trt = Anodes, 
+  outcome = Ynodes[11], 
+  time_vary = Lnodes_list, 
+  cens = Cnodes, 
+  id = "SWANID",
+  shift = d1, 
+  mtp = TRUE,
+  outcome_type = "continuous",
+  folds = 1
+)
+
+fit_lmtp_d0 <- lmtp_tmle(
+  data = dfoi,
+  trt = Anodes,
+  outcome = Ynodes[11],
+  time_vary = Lnodes_list,
+  cens = Cnodes,
+  id = "SWANID",
+  shift = d0,
+  mtp = TRUE,
+  outcome_type = "continuous",
+  folds = 1
+)
+
+lmtp_contrast(fit_lmtp_d1, ref=fit_lmtp_d0)
