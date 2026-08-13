@@ -17,3 +17,5 @@ and expertise.
 
 Of course, since we learned about TMLE in the course, the goal of this project is to 
 demonstrate the usage of TMLE and follow the causal roadmap in a real-world setting.
+
+See github repo: https://github.com/c6shi/hormone-use-bmd. 

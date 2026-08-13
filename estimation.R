@@ -8,6 +8,8 @@ library(SuperLearner)
 library(ggplot2)
 library(stringr)
 library(lmtp)
+library(progressr)
+handlers(global = TRUE)
 
 # Read data
 spine_df <- read.csv(here("data", "spine_final.csv"), header=TRUE)
@@ -85,7 +87,7 @@ ggplot(fit1_IC_df, aes(x = IC)) +
   theme_minimal()
 
 ##### Attempt 3: LMTP #####
-# LMTP 1: stay on MHTs one visit longer after first use of MHT
+# first, try to replicate the L-TMLE static intervention results via LMTP_TMLE
 d1 <- function(data, a) {
   rep(1, nrow(data))
 }
@@ -94,13 +96,18 @@ d0 <- function(data, a) {
   rep(0, nrow(data))
 }
 
+# need to include Ynodes up to last Y in Lnodes
 Lnodes_list <- list()
 for (i in 1:10) {
   start_index <- ((14 * (i-1)) + 1)
   stop_index <- 14*i
-  Lnodes_list[[i]] <- Lnodes[start_index:stop_index]
+  Lnodes_list[[i]] <- c(Lnodes[start_index:stop_index], Ynodes[i+1])
 }
 Lnodes_list[[10]] <- Lnodes_list[[10]][1:13]
+
+learners <- list("SL.glm", "SL.earth",
+                 c("SL.glm", "screen.corP"),
+                 c("SL.earth", "screen.corP"))
 
 fit_lmtp_d1 <- lmtp_tmle(
   data = dfoi, 
@@ -112,7 +119,9 @@ fit_lmtp_d1 <- lmtp_tmle(
   shift = d1, 
   mtp = TRUE,
   outcome_type = "continuous",
-  folds = 1
+  learners_outcome = learners,
+  learners_trt = learners,
+  folds = 5
 )
 
 fit_lmtp_d0 <- lmtp_tmle(
@@ -125,7 +134,12 @@ fit_lmtp_d0 <- lmtp_tmle(
   shift = d0,
   mtp = TRUE,
   outcome_type = "continuous",
-  folds = 1
+  learners_outcome = learners,
+  learners_trt = learners,
+  folds = 5
 )
 
 lmtp_contrast(fit_lmtp_d1, ref=fit_lmtp_d0)
+
+
+# LMTP 1: stay on MHTs one visit longer after first use of MHT
