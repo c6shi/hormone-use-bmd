@@ -9,6 +9,7 @@ library(ggplot2)
 library(stringr)
 library(lmtp)
 library(progressr)
+library(future)
 handlers(global = TRUE)
 
 # Read data
@@ -97,22 +98,41 @@ d0 <- function(data, a) {
 }
 
 # need to include Ynodes up to last Y in Lnodes
+# and # need to change censoring to be 0 = censored, 1 = uncensored
 Lnodes_list <- list()
 for (i in 1:10) {
   start_index <- ((14 * (i-1)) + 1)
   stop_index <- 14*i
   Lnodes_list[[i]] <- c(Lnodes[start_index:stop_index], Ynodes[i+1])
+  censoring_col <- Cnodes[i]
+  dfoi[censoring_col] <- 1 - dfoi[censoring_col]
 }
 Lnodes_list[[10]] <- Lnodes_list[[10]][1:13]
+
+# do I put the Lnodes 0 as the first in Lnodes_list?
+# and no Lnodes 10 (since measured at the same time as Y10)?
+# Lnodes_list <- list()
+# Lnodes_list[[1]] <- c(cols[2:18], cols[20])
+# for (i in 1:9) {
+#   start_index <- ((14 * (i-1)) + 1)
+#   stop_index <- 14*i
+#   Lnodes_list[[i+1]] <- c(Lnodes[start_index:stop_index], Ynodes[i+1])
+#   censoring_col <- Cnodes[i]
+#   dfoi[censoring_col] <- 1 - dfoi[censoring_col]
+# }
 
 learners <- list("SL.glm", "SL.earth",
                  c("SL.glm", "screen.corP"),
                  c("SL.earth", "screen.corP"))
 
+baseline <- c(cols[2:18], cols[20])
+
+plan(multisession, workers = 5)
 fit_lmtp_d1 <- lmtp_tmle(
   data = dfoi, 
   trt = Anodes, 
   outcome = Ynodes[11], 
+  baseline = baseline,
   time_vary = Lnodes_list, 
   cens = Cnodes, 
   id = "SWANID",
@@ -121,13 +141,15 @@ fit_lmtp_d1 <- lmtp_tmle(
   outcome_type = "continuous",
   learners_outcome = learners,
   learners_trt = learners,
-  folds = 5
+  folds = 5,
+  control = lmtp_control(.trim = 1-bound)
 )
 
 fit_lmtp_d0 <- lmtp_tmle(
   data = dfoi,
   trt = Anodes,
   outcome = Ynodes[11],
+  baseline = baseline,
   time_vary = Lnodes_list,
   cens = Cnodes,
   id = "SWANID",
@@ -136,10 +158,76 @@ fit_lmtp_d0 <- lmtp_tmle(
   outcome_type = "continuous",
   learners_outcome = learners,
   learners_trt = learners,
-  folds = 5
+  folds = 5,
+  control = lmtp_control(.trim = 1-bound)
 )
 
 lmtp_contrast(fit_lmtp_d1, ref=fit_lmtp_d0)
 
-
 # LMTP 1: stay on MHTs one visit longer after first use of MHT
+
+# LMTP 3: start and stay on MHTs after reaching late perimenopause or age 55,
+# whichever happens first
+d_start_lateperi_or_55 <- dfoi
+for (i in 1:9) {
+  a_col <- sprintf("HORMUSER%s", i)
+  age_col <- "AGE"
+  status_col <- sprintf("STATUS%s", i)
+  current_age <- dfoi[[age_col]] + i
+  d_start_lateperi_or_55$current_age <- dfoi[[age_col]] + i
+  censor_col <- paste0(substr(censor_prefix_reg, start=2, stop=nchar(censor_prefix_reg)), i)
+  
+  d_start_lateperi_or_55[[a_col]] <- apply(d_start_lateperi_or_55, 1, function(row) {
+    if (row["current_age"] > 55 || row[status_col] == 2) {
+      return(1)
+    } else {
+      return(row[[a_col]])
+    }
+  })
+  
+  d_start_lateperi_or_55[censor_col] <- 1
+  
+  if (i == 9) {
+    next_censor_col <- paste0(substr(censor_prefix_reg, start=2, stop=nchar(censor_prefix_reg)), i+1)
+    d_start_lateperi_or_55[next_censor_col] <- 1
+  }
+}
+
+# check the change in distribution! (doing this in python, jupyter notebook)
+sum(!(d_start_lateperi_or_55$HORMUSER9 == dfoi$HORMUSER9))
+
+fit_lmtp_d_start_lateperi_or_55 <- lmtp_tmle(
+  data = dfoi, 
+  trt = Anodes, 
+  outcome = Ynodes[11], 
+  baseline = baseline,
+  time_vary = Lnodes_list, 
+  cens = Cnodes, 
+  id = "SWANID",
+  shifted = d_start_lateperi_or_55, 
+  mtp = TRUE,
+  outcome_type = "continuous",
+  learners_outcome = learners,
+  learners_trt = learners,
+  folds = 5
+)
+
+fit_observed <- lmtp_tmle(
+  data = dfoi, 
+  trt = Anodes, 
+  outcome = Ynodes[11], 
+  baseline = baseline, 
+  time_vary = Lnodes_list, 
+  cens = Cnodes, 
+  id = "SWANID",
+  shift = NULL,
+  mtp = TRUE,
+  outcome_type = "continuous",
+  learners_outcome = learners,
+  learners_trt = learners,
+  folds = 5
+)
+
+lmtp_contrast(fit_lmtp_d_start_lateperi_or_55, ref=fit_observed)
+
+plan(sequential)
